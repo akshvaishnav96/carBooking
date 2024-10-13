@@ -1,0 +1,152 @@
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setSelectedBrand,
+  setSelectedModel,
+  setSearchQuery,
+  inputHandler,
+  clearInputs,
+  setModel,
+  setCars,
+  setBrand,
+} from "../slices/carSlice";
+import { useLocation } from "react-router-dom";
+import { fetchHandler } from "../utils/handlers";
+
+const FilterComponent = ({ model, cars, brand }) => {
+  const location = useLocation();
+  const { selectedModel, selectedBrand, searchQuery,carsData } = useSelector(
+    (state) => state.cars
+  );
+  const dispatch = useDispatch();
+  // const params = new URLSearchParams(location.search);
+  // const urlModel = params.get("model");
+  // const urlBrand = params.get("brand");
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    let url = "";
+    console.log(selectedModel, selectedBrand);
+
+    if (selectedBrand && selectedModel) {
+      url = `?model=${selectedModel}&brand=${selectedBrand}`;
+    } else if (selectedBrand) {
+      url = `?brand=${selectedBrand}`;
+    } else if (selectedModel) {
+      url = `?model=${selectedModel}`;
+    } else {
+      url = "";
+    }
+    window.history.pushState(null, "", url);
+
+    dispatch(setSearchQuery("/api/v1/admin/cars"+url))
+    
+  }
+
+  useEffect(() => {
+    async function fetchData() {
+      let query = searchQuery ? searchQuery : "";
+      const data = await fetchHandler(query,"get");
+    
+
+      if(data.result){
+
+        dispatch(setCars(data.result))
+      }
+      
+      
+    }
+    fetchData();
+  }, [searchQuery]);
+
+
+  async function brandChangehandler(e) {
+    try {
+      dispatch(setSelectedBrand(e.target.value));
+      const response = await fetchHandler(
+        `/api/v1/admin/cars/model?brand=${e.target.value}`,
+        "get"
+      );
+      dispatch(setModel(response.result));
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  async function resetHandler(){
+    try {
+      const responseModel = await fetchHandler(
+        `/api/v1/admin/cars/model`,
+        "get"
+      );
+       const responseBrand = await fetchHandler(
+        `/api/v1/admin/cars/brand`,
+        "get"
+      );
+      const carsDataResponse = await fetchHandler(
+        `/api/v1/admin/cars`,
+        "get"
+      );
+
+  
+      window.history.replaceState("","","/")
+      dispatch(setModel(responseModel.result));
+      dispatch(setCars(carsDataResponse.result));
+      dispatch(setBrand(responseBrand.result));
+      
+      dispatch(setSelectedBrand(""));
+      dispatch(setSelectedModel(""));
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  return (
+    <div className="max-w-3xl mx-auto p-4 space-y-6">
+      <div>
+        <input
+          type="text"
+          placeholder="Search by name"
+          className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onChange={(e) => useDispatch(setSearchQuery(e.target.value))}
+        />
+      </div>
+      <form className=" space-y-6" onSubmit={handleSubmit}>
+        <div>
+          <select
+            value={selectedBrand}
+            onChange={brandChangehandler}
+            className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          
+          >
+            <option value="">Car Brand's</option>
+            {brand?.map((item) => (
+              <option value={item.brand}>{item.brand}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <select
+            className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+           
+            onChange={(e) => dispatch(setSelectedModel(e.target.value))}
+            value={selectedModel}
+          >
+            <option value="">Select Car Model</option>
+            {model?.map((item) => (
+              <option value={item.model}>{item.model}</option>
+            ))}
+          </select>
+        </div>
+        <button className="btn bg-blue-500 px-4 py-2 rounded text-white">
+          Submit
+        </button>
+        <button type="button" onClick={resetHandler} className="btn mx-5 bg-red-800 px-4 py-2 rounded text-white">
+          reset
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default FilterComponent;

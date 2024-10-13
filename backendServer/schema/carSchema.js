@@ -5,13 +5,13 @@ const carSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
-    maxlength: [30, "Max 30 characters allowed"],
+    maxlength: [50, "Max 50 characters allowed"],
   },
   model: {
     type: String,
     required: true,
     trim: true,
-    maxlength: [30, "Max 30 characters allowed"],
+    maxlength: [50, "Max 50 characters allowed"],
   },
   carnumber: {
     type: String,
@@ -24,13 +24,24 @@ const carSchema = new mongoose.Schema({
   description: {
     type: String,
     trim: true,
-    maxlength: [500, "Max 500 character allowed"],
     required: true,
   },
-  images: [{
-    type: String,
-    trim: true,
-}],
+  booked: {
+    type: Boolean,
+    default: false,
+  },
+  images: [
+    {
+      type: String,
+      trim: true,
+    },
+  ],
+  startdate:{
+    type:Date,
+  },
+  enddate:{
+    type:Date,
+  }
 });
 
 export const Car = mongoose.model("Car", carSchema);

@@ -13,13 +13,12 @@ try {
         let tokenUserId = verifyToken.id;
 
         const existUser = await User.findById(tokenUserId).select("-password");
-        if(existUser){ 
-            req.user = existUser
-            next();
-        }else{
-            throw new Error("user not Allowed to access resources");
-        }
-       
+        if (!existUser) {
+            return res.status(401).json({ status: false, msg: 'User not found',result:"" });
+          }
+      
+          req.user = existUser; 
+          next(); // 
     }else{
         throw new Error("Please Login First");
     }

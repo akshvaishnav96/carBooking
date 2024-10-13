@@ -15,7 +15,7 @@ const generateAccessTokenAndRefreshToken = async function (userID) {
     const userId = updateUser._id;
     return { accessToken, refreshToken, userId };
   } catch (error) {
-    throw new ApiErrors(401, "cookies not set something went wrong", error);
+    throw new Error(error.message);
   }
 };
 
@@ -93,6 +93,7 @@ try {
   
     const { accessToken, refreshToken, userId } =
       await generateAccessTokenAndRefreshToken(existUser._id);
+
     let cookieOption = {
       httpOnly: true,
       secure: true,
@@ -101,6 +102,8 @@ try {
       ),
     };
     const user = await User.findById(userId).select("-password -refreshToken ");
+  
+    
     res
       .status(200)
       .cookie("accessToken", accessToken, cookieOption)
@@ -116,26 +119,20 @@ try {
 
 
 
-function getRentCarhandler(req, res) {}
+function getRentCarhandler(req, res) {  
+}
 
 function uplodeRentCarhandler(req, res) {}
 
 function getSingleCar(req, res) {}
 
-function getCarsAccordingToBrands(req, res) {}
 
-function getCarsAccordingToModels() {}
-
-function fetchAllCarsHandler() {}
 
 export {
   registrationHandler,
   loginHandler,
-
   getRentCarhandler,
   uplodeRentCarhandler,
   getSingleCar,
-  getCarsAccordingToBrands,
-  getCarsAccordingToModels,
-  fetchAllCarsHandler,
+
 };

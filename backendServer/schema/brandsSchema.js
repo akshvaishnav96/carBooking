@@ -6,7 +6,7 @@ const brandSchema = new mongoose.Schema({
         required:true,
         trim:true,
         unique:true,
-        maxlength: [30, "Max 30 characters allowed"],
+        maxlength: [50, "Max 50 characters allowed"],
 
     },
 },{timestamps:true})

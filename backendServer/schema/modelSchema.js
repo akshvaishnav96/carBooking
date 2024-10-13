@@ -5,14 +5,13 @@ const modelSchema = new mongoose.Schema({
         type:String,
         required:true,
         trim:true,
-        maxlength: [30, "Max 30 characters allowed"],
+        maxlength: [50, "Max 50 characters allowed"],
     },
     brand:{
-        type:String,
-        required:true,
-        trim:true,
-        maxlength: [30, "Max 30 characters allowed"],
-
+       type:String,
+       required:true,
+       trim:true,
+       maxlength: [50, "Max 50 characters allowed"],
     }
 },{timestamps:true})
 
