@@ -9,6 +9,7 @@ const initialState = {
   brand: [],
   model: [],
   msgData :[],
+  loggedAdmin:[],
   
 
   brandInputVal: "",
@@ -84,6 +85,9 @@ const carsSlice = createSlice({
     setMsgData: function (state, action) {
       state.msgData = action.payload;
     },
+    setLoggedAdmin :function(state,action) {
+      state.loggedAdmin = action.payload
+    }
   },
 });
 
@@ -98,7 +102,8 @@ export const {
   setModel,
   setLoading,
   setSingleCar,
-  setMsgData
+  setMsgData,
+  setLoggedAdmin
 } = carsSlice.actions;
 
 export default carsSlice.reducer;

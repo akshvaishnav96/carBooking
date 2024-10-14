@@ -21,25 +21,25 @@ const adminRouter = Router();
 // get routes //////////////////////////////////////
 adminRouter.route("/cars/brand").get(getAllBrands);
 adminRouter.route("/cars/model").get(getAllModels);
-adminRouter.route("/users").get(auth, fetchAllUsers);
-adminRouter.route("/users/:id").get(fetchSingleUser);
+adminRouter.route("/users").get(auth,fetchAllUsers);
+adminRouter.route("/users/:id").get(auth,fetchSingleUser);
 adminRouter.route("/cars").get(getuplodedCars);
-adminRouter.route("/cars/:id").get(getSingleCars);
-adminRouter.route("/msg").get(getMsgs);
+adminRouter.route("/cars/:id").get(auth,getSingleCars);
+adminRouter.route("/msg").get(auth,getMsgs);
 
 
 // post routes /////////////////////////////////////
-adminRouter.route("/cars/brand").post(addBrandHandler);
-adminRouter.route("/cars/model").post(addModelhandler);
+adminRouter.route("/cars/brand").post(auth,addBrandHandler);
+adminRouter.route("/cars/model").post(auth,addModelhandler);
 
 adminRouter
   .route("/cars")
-  .post(upload.fields([{ name: "images", maxCount: 4 }]), addCarHandler);
+  .post(auth,upload.fields([{ name: "images", maxCount: 4 }]), addCarHandler);
 
 /////////////////////////////////////////////////////
-adminRouter.route("/cars/:id").delete(deleteCarHandler)
+adminRouter.route("/cars/:id").delete(auth,deleteCarHandler)
 
 ///////////////////////////////////////////////////////
-adminRouter.route("/cars/:id").patch(updateCarHandler)
+adminRouter.route("/cars/:id").patch(auth,updateCarHandler)
 
 export { adminRouter };

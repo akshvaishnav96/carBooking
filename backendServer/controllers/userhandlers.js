@@ -56,6 +56,7 @@ async function registrationHandler(req, res) {
 }
 
 async function loginHandler(req, res) {
+  
 try {
     const alreadyAccessToken = await req.cookies.accessToken;
     if (alreadyAccessToken) {
@@ -72,6 +73,8 @@ try {
     }
   
     const { email, password } = req.body;
+
+    
     if (!email) {
       throw new Error("Please enter username or email to login");
     }
@@ -104,15 +107,14 @@ try {
     const user = await User.findById(userId).select("-password -refreshToken ");
   
     
-    res
-      .status(200)
-      .cookie("accessToken", accessToken, cookieOption)
-      .json({
+    res.cookie("accessToken", accessToken, cookieOption)
+      res.status(200).json({
         status: true,
         msg: "User Logged In  Successfully",
         result: user,
       });
 } catch (error) {
+  
   res.status(400).json({status:false,result:"",msg:error.message})
 }
 }

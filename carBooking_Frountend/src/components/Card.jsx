@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { MdDelete } from "react-icons/md";
 import { fetchHandler } from "../utils/handlers";
 import { setCars } from "../slices/carSlice";
+import { toast } from "react-toastify";
 
 const Card = ({ item }) => {
   const dispatch = useDispatch();
@@ -13,8 +14,11 @@ const Card = ({ item }) => {
     try {
       const response = await fetchHandler(`/api/v1/admin/cars/${id}`, "delete");
       dispatch(setCars(response.result));
+      toast.success("successfully deleted")
     } catch (error) {
       console.log(error.message);
+      toast.success("Something went wrong while Deleting")
+
     }
   }
 
@@ -29,8 +33,8 @@ const Card = ({ item }) => {
         <span className="text-gray-700 mr-3 uppercase text-xs">
           {item.brand}
         </span>
-        <p className="text-lg font-bold text-black truncate block capitalize">
-          {item.model}
+        <p className="text-lg font-bold text-black text-[2rem] truncate block capitalize">
+         {item.brand}-{item.model}
         </p>
         {location.pathname.startsWith("/admin") && <p className="text-lg font-semibold text-black">{item.carnumber.toUpperCase()}</p>}
 
@@ -53,7 +57,7 @@ const Card = ({ item }) => {
             </button>
           </Link>
         ) : (
-          <div className="flex items-center">
+          <div className="flex items-center my-5">
             {location.pathname.startsWith("/admin") ? (
               <div className="flex items-center gap-5">
              

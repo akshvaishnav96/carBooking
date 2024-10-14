@@ -1,12 +1,13 @@
-import axios from "axios";
+import axios from "./axiosConfig"
+
 const BASE_URL = import.meta.env.VITE_BASE_URL
 
 async function fetchHandler(url,method="get",data=""){
 try {
     
-    const response = await axios[method](`${BASE_URL}${url}`,data,)
+    const response = await axios[method](`${BASE_URL}${url}`,data)
     if(!response.data.status){
-        throw new Error(response.data.msg)
+        throw new Error(response.data)
     }
     return response.data
 } catch (error) {

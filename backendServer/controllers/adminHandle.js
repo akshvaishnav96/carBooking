@@ -92,7 +92,6 @@ async function updateCarHandler(req, res) {
   try {
     const id = req.params.id;
     const { startdate, enddate,name,email,mobile,address } = req.body;
-    console.log(email);
     
 
     if(!email) throw new Error("email is required") 
@@ -206,7 +205,7 @@ async function getuplodedCars(req, res) {
     }
     res.status(200).json({ msg: "success", status: true, result });
   } catch (error) {
-    res.status(400).json({ msg: "failed", status: falsd, result: "" });
+    res.status(400).json({ msg: "failed", status: false, result: "" });
   }
 }
 async function fetchAllUsers(req, res) {
@@ -229,7 +228,7 @@ async function fetchSingleUser(req, res) {
     }
     res.status(200).json({ msg: "success", status: true, result: user });
   } catch (error) {
-    res.status(200).json({ msg: error.message, status: false, result: "" });
+    res.status(400).json({ msg: error.message, status: false, result: "" });
   }
 }
 
@@ -242,7 +241,7 @@ async function getSingleCars(req, res) {
     }
     res.status(200).json({ msg: "success", status: true, result: car });
   } catch (error) {
-    res.status(200).json({ msg: error.message, status: false, result: "" });
+    res.status(400).json({ msg: error.message, status: false, result: "" });
   }
 }
 
@@ -257,7 +256,7 @@ async function getMsgs(req, res) {
     }
     res.status(200).json({ msg: "success", status: true, result: msg });
   } catch (error) {
-    res.status(200).json({ msg: error.message, status: false, result: "" });
+    res.status(400).json({ msg: error.message, status: false, result: "" });
   }
 }
 

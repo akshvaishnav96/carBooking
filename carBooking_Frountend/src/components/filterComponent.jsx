@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import {  toast } from 'react-toastify';
 import {
   setSelectedBrand,
   setSelectedModel,
@@ -36,7 +37,6 @@ const FilterComponent = ({ model, cars, brand }) => {
     } else {
       url = "";
     }
-    window.history.pushState(null, "", url);
 
     dispatch(setSearchQuery("/api/v1/admin/cars"+url))
     
@@ -95,6 +95,8 @@ const FilterComponent = ({ model, cars, brand }) => {
       
       dispatch(setSelectedBrand(""));
       dispatch(setSelectedModel(""));
+      
+ 
     } catch (error) {
       console.log(error.message);
     }

@@ -4,9 +4,8 @@ import Wrapper from "./components/Wrapper";
 import SingleProduct from "./Pages/SingleProduct";
 import NotFound from "./Pages/NotFound";
 
-
-import SignUp from "./components/SignUp";
-import Login from "./components/Login";
+import SignUp from "./Pages/SignUp";
+import Login from "./Pages/Login";
 import { fetchHandler } from "./utils/handlers";
 import Admin from "./Pages/Admin";
 import Msgs from "./Pages/Msgs"
@@ -14,6 +13,7 @@ import AdminHeaderWrapper from "./components/AdminHeaderWrapper";
 import UplodeBrand from "./components/UplodeBrand";
 import UplodeModel from "./components/UplodeModel";
 import UplodeCar from "./components/UplodeCar";
+
 
 
 
@@ -39,15 +39,16 @@ const router = createBrowserRouter([
         path: "/cars/:id",
         element: <SingleProduct />,
       },
+
       {
         path: "/admin",
         element: (
-          <AdminHeaderWrapper />
+          <AdminHeaderWrapper  /> 
         ),
         children: [
           {
             index: true,
-            element: <Admin />,
+            element:<Admin/>,
             loader: async () => {
               const brand = await fetchHandler("/api/v1/admin/cars/brand")
               const model = await fetchHandler("/api/v1/admin/cars/model")

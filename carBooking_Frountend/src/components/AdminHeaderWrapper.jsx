@@ -1,7 +1,31 @@
-import React from 'react'
-import { Link, Outlet } from 'react-router-dom';
+import React, { useEffect } from 'react'
+import { Link, Outlet, redirect, useNavigate } from 'react-router-dom';
+import { fetchHandler } from '../utils/handlers';
 
-export default function AdminHeaderWrapper() {
+export default  function AdminHeaderWrapper() {
+  
+  let navigate = useNavigate()
+
+  
+
+  useEffect(()=>{
+    const isAuthenticated = async() => {
+
+        const response = await fetchHandler("/api/v1/admin/msg","get");
+        
+        if(!response.status) navigate("/login");
+
+        
+        
+    }
+    isAuthenticated()
+  
+  },[])
+  
+  
+  
+ 
+
     const navItems = [ 
       { id: 1, text: 'brand', nav: "/admin/brand" },
       { id: 2, text: 'model', nav: "/admin/model" },

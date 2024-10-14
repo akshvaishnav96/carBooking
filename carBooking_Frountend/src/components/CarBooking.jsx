@@ -1,10 +1,13 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { clearInputs, inputHandler, setCars } from "../slices/carSlice";
+import { clearInputs, inputHandler, setCars, setMsgData } from "../slices/carSlice";
 import { fetchHandler } from "../utils/handlers";
+import { redirect, useNavigate } from "react-router-dom";
+import {toast} from "react-toastify"
 
 export default function CarBooking({ item }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   const today = new Date().toISOString().split("T")[0];
 
 
@@ -31,11 +34,20 @@ export default function CarBooking({ item }) {
         "patch",
         formData
       );
-      dispatch(setCars(response.result.newData));
-      dispatch(setMsgs(response.result.msgData));
-      dispatch(clearInputs())
+      if(response.status){
+
+        dispatch(setCars(response.result.newData));
+        dispatch(setMsgData(response.result.msgData));
+        dispatch(clearInputs())
+        navigate("/")
+        toast.success("successfully Booked")
+      }else{
+        console.log(response);
+        
+      }
     } catch (error) {
-      console.log(error);
+      toast.success(error.message)
+
     }
   }
   
