@@ -91,7 +91,14 @@ async function addCarHandler(req, res) {
 async function updateCarHandler(req, res) {
   try {
     const id = req.params.id;
-    const { startdate, enddate } = req.body;
+    const { startdate, enddate,name,email,mobile,address } = req.body;
+    console.log(email);
+    
+
+    if(!email) throw new Error("email is required") 
+      if(!name) throw new Error("name is required") 
+        if(!mobile) throw new Error("mobile number is required") 
+          if(!address) throw new Error("address  is required") 
     const carData = await Car.findById(id);
     carData.startdate = new Date(startdate).toDateString();
     carData.enddate = new Date(enddate).toDateString();
@@ -106,7 +113,9 @@ async function updateCarHandler(req, res) {
       brand: carData.brand,
       model: carData.model,
       carId: carData._id,
-      image:carData.images[0]
+      image:carData.images[0],
+      email,name,mobile,address
+      
     });
 
     if(!msgResponse) throw new Error("something went wrong when add message")
@@ -172,7 +181,6 @@ async function getAllModels(req, res) {
       result = await Model.find({});
     }
 
-    console.log(result);
 
     res
       .status(200)

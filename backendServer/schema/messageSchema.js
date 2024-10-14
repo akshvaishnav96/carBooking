@@ -26,7 +26,31 @@ const messageSchema = new mongoose.Schema({
     carId:{
         type:mongoose.Types.ObjectId,
         ref:"Car"
-    }  
+    },
+    name:{
+        type:String,
+        required:true,
+        trim:true,
+        max:[50,"max 50 chracters allowed"]
+    }, 
+    email:{
+        type:String,
+        required:true,
+        trim:true,
+        max:[50,"max 50 chracters allowed"]
+    }, 
+    mobile:{
+        type:String,
+        required:true,
+        trim:true,
+        max:[50,"max 50 chracters allowed"]
+    },
+    address:{
+        type:String,
+        required:true,
+        trim:true,
+    },
+    
 })
 
 export const Msg = mongoose.model("Msg",messageSchema)

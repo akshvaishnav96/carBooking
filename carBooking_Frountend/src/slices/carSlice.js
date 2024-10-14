@@ -19,6 +19,11 @@ const initialState = {
   selectedModel: "",
   startdate: "",
   enddate: "",
+  userNameVal:"",
+  addressVal:'',
+  mobileVal:"",
+  emailVal:""
+  
 };
 
 const carsSlice = createSlice({
@@ -38,6 +43,11 @@ const carsSlice = createSlice({
       state.startdate ="",
       state.enddate = "",
       (state.selectedBrand = ""), (state.selectedModel = "");
+      state.addressVal = "",
+      state.mobileVal = "",
+      state.userNameVal = "",
+      state.emailVal = ""
+
     },
 
     setCars: function (state, action) {

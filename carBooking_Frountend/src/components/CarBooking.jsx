@@ -1,12 +1,19 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { clearInputs, inputHandler, setCars } from "../slices/carSlice";
+import { inputHandler, setCars } from "../slices/carSlice";
 import { fetchHandler } from "../utils/handlers";
 
 export default function CarBooking({ item }) {
   const dispatch = useDispatch();
   const today = new Date().toISOString().split("T")[0];
-  const { startdate, enddate } = useSelector((state) => state.cars);
+
+
+
+  const { startdate, enddate, nameVal, emailVal, addressVal, mobileVal } =
+    useSelector((state) => state.cars);
+
+
+    
 
   async function handleSubmit(e) {
     try {
@@ -14,6 +21,10 @@ export default function CarBooking({ item }) {
       const formData = {
         startdate,
         enddate,
+        email: emailVal,
+        mobile: mobileVal,
+        name: nameVal,
+        address: addressVal,
       };
       const response = await fetchHandler(
         `/api/v1/admin/cars/${item._id}`,
@@ -29,6 +40,98 @@ export default function CarBooking({ item }) {
   return (
     <>
       <form className=" space-y-6 w-[40%]  my-6" onSubmit={handleSubmit}>
+        <div>
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium leading-6 text-gray-900"
+          >
+            Enter Your Name <span className="text-red-500">*</span>
+          </label>
+          <div className="mt-2">
+            <input
+              id="name"
+              name="nameVal"
+              type="text"
+              required
+              onChange={(e) =>
+                dispatch(
+                  inputHandler({ name: e.target.name, value: e.target.value })
+                )
+              }
+              value={nameVal}
+              className=" p-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            />
+          </div>
+        </div>
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium leading-6 text-gray-900"
+          >
+            Enter Your email <span className="text-red-500">*</span>
+          </label>
+          <div className="mt-2">
+            <input
+              id="email"
+              name="emailVal"
+              type="email"
+              required
+              onChange={(e) =>
+                dispatch(
+                  inputHandler({ name: e.target.name, value: e.target.value })
+                )
+              }
+              value={emailVal}
+              className=" p-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            />
+          </div>
+        </div>
+        <div>
+          <label
+            htmlFor="mobile"
+            className="block text-sm font-medium leading-6 text-gray-900"
+          >
+            Enter Mobile Number <span className="text-red-500">*</span>
+          </label>
+          <div className="mt-2">
+            <input
+              id="mobile"
+              name="mobileVal"
+              type="number"
+              required
+              onChange={(e) =>
+                dispatch(
+                  inputHandler({ name: e.target.name, value: e.target.value })
+                )
+              }
+              value={mobileVal}
+              className=" p-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            />
+          </div>
+        </div>
+        <div>
+          <label
+            htmlFor="mobile"
+            className="block text-sm font-medium leading-6 text-gray-900"
+          >
+            Address <span className="text-red-500">*</span>
+          </label>
+          <div className="mt-2">
+            <input
+              id="address"
+              name="addressVal"
+              type="text"
+              required
+              onChange={(e) =>
+                dispatch(
+                  inputHandler({ name: e.target.name, value: e.target.value })
+                )
+              }
+              value={addressVal}
+              className=" p-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            />
+          </div>
+        </div>
         <div>
           <label
             htmlFor="startdate"

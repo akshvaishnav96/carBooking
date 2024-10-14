@@ -11,7 +11,6 @@ import MsgComponent from "../components/MsgComponent"
 export default function Admin() {
   const dispatch = useDispatch();
   const data = useLoaderData();
-  console.log(data);
   
   const { model, carsData, brand,msgData } = useSelector((state) => state.cars);
 

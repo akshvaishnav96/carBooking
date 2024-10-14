@@ -32,7 +32,7 @@ const Card = ({ item }) => {
         <p className="text-lg font-bold text-black truncate block capitalize">
           {item.model}
         </p>
-        <p className="text-lg font-semibold text-black">{item.carnumber}</p>
+        {location.pathname.startsWith("/admin") && <p className="text-lg font-semibold text-black">{item.carnumber.toUpperCase()}</p>}
 
         {item.booked && (
           <div className="py-3">

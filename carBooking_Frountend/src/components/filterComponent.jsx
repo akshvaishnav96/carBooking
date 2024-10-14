@@ -26,7 +26,6 @@ const FilterComponent = ({ model, cars, brand }) => {
   function handleSubmit(e) {
     e.preventDefault();
     let url = "";
-    console.log(selectedModel, selectedBrand);
 
     if (selectedBrand && selectedModel) {
       url = `?model=${selectedModel}&brand=${selectedBrand}`;
@@ -103,14 +102,14 @@ const FilterComponent = ({ model, cars, brand }) => {
 
   return (
     <div className="max-w-3xl mx-auto p-4 space-y-6">
-      <div>
+      {/* <div>
         <input
           type="text"
           placeholder="Search by name"
           className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           onChange={(e) => useDispatch(setSearchQuery(e.target.value))}
         />
-      </div>
+      </div> */}
       <form className=" space-y-6" onSubmit={handleSubmit}>
         <div>
           <select
