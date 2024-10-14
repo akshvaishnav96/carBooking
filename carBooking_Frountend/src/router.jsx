@@ -9,6 +9,11 @@ import SignUp from "./components/SignUp";
 import Login from "./components/Login";
 import { fetchHandler } from "./utils/handlers";
 import Admin from "./Pages/Admin";
+import Msgs from "./Pages/Msgs"
+import AdminHeaderWrapper from "./components/AdminHeaderWrapper";
+import UplodeBrand from "./components/UplodeBrand";
+import UplodeModel from "./components/UplodeModel";
+import UplodeCar from "./components/UplodeCar";
 
 
 
@@ -20,14 +25,14 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Home />,
-        loader: async()=> {
-      
-           const  brand =  await fetchHandler("/api/v1/admin/cars/brand")
-          const model =  await fetchHandler("/api/v1/admin/cars/model")
-          const cars =   await fetchHandler("/api/v1/admin/cars")
-  
-          return {brand,model,cars}
-        
+        loader: async () => {
+
+          const brand = await fetchHandler("/api/v1/admin/cars/brand")
+          const model = await fetchHandler("/api/v1/admin/cars/model")
+          const cars = await fetchHandler("/api/v1/admin/cars")
+
+          return { brand, model, cars }
+
         }
       },
       {
@@ -37,17 +42,82 @@ const router = createBrowserRouter([
       {
         path: "/admin",
         element: (
-            <Admin />
+          <AdminHeaderWrapper />
         ),
-        loader:async()=>{
-          const  brand =  await fetchHandler("/api/v1/admin/cars/brand")
-          const model =  await fetchHandler("/api/v1/admin/cars/model")
-          const cars =   await fetchHandler("/api/v1/admin/cars")
-          const msgs=   await fetchHandler("/api/v1/admin/msg")
-          
-          return {brand,model,cars,msgs}
-        }
+        children: [
+          {
+            index: true,
+            element: <Admin />,
+            loader: async () => {
+              const brand = await fetchHandler("/api/v1/admin/cars/brand")
+              const model = await fetchHandler("/api/v1/admin/cars/model")
+              const cars = await fetchHandler("/api/v1/admin/cars")
+              const msgs = await fetchHandler("/api/v1/admin/msg")
+
+              return { brand, model, cars, msgs }
+            }
+          },
+
+          {
+            path: "msgs",
+            element: <Msgs />,
+            loader: async () => {
+              try {
+                const msgs = await fetchHandler("/api/v1/admin/msg", "get")
+                return msgs
+              } catch (error) {
+                console.log(error.message);
+
+              }
+            }
+          },
+
+          {
+            path: "brand",
+            element: <UplodeBrand />,
+            loader: async () => {
+              try {
+                const msgs = await fetchHandler("/api/v1/admin/msg", "get")
+                return msgs
+              } catch (error) {
+                console.log(error.message);
+
+              }
+            }
+          },
+          {
+            path: "model",
+            element: <UplodeModel />,
+            loader: async () => {
+              try {
+                const msgs = await fetchHandler("/api/v1/admin/msg", "get")
+                return msgs
+              } catch (error) {
+                console.log(error.message);
+
+              }
+            }
+          },
+          {
+            path: "addcar",
+            element: <UplodeCar />,
+            loader: async () => {
+              try {
+                const msgs = await fetchHandler("/api/v1/admin/msg", "get")
+                return msgs
+              } catch (error) {
+                console.log(error.message);
+
+              }
+            }
+          },
+
+
+        ]
+
       },
+
+
       {
         path: "/signup",
         element: <SignUp />,
@@ -56,7 +126,8 @@ const router = createBrowserRouter([
         path: "/login",
         element: <Login />,
       },
-      
+
+
     ],
   },
   {

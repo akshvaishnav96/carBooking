@@ -43,11 +43,13 @@ export default function Home() {
   return (
     <>
       <h3 className="text-4xl font-bold text-cyan-700 text-center mb-3 mt-8">
-        Featured Components
+        Filter Options
       </h3>
       <FilterComponent model={model} cars={carsData} brand={brand} />
     
-  
+      <h3 className="text-4xl font-bold text-cyan-900 text-center mb-3 mt-8">
+        Our Collection
+      </h3>
       <div className=" font-serif ml-9 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
         {carsData.map((item)=> <Card item={item}/>)}
 

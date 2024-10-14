@@ -131,19 +131,7 @@ Some routes may require authentication. Ensure you include a valid token in the 
 
 
 ## Current ENV :
-PORT=4000
-DBURL = mongodb+srv://akashdiwakar:mongodbLogin1234@cluster0.iqmtmxn.mongodb.net
-DBNAME = carBooking
-CORS_ORIGIN = "http://localhost:5173"
-ACCESS_TOKEN_KEY = eyJhbGciOipvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
-ACCESS_TOKEN_EXPIRY = 86400000
-REFRESH_TOKEN_KEY = eyJhbGciOipvaG4gRG9lIiwiaWkajsfghajshdlakshdlashdaswRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
-REFRESH_TOKEN_EXPIRY = 864000000
-COOKIE_EXPIRY_FROM_BROWSER = 86400000
-CLOUD_NAME = dhcsl4l6r
-API_KEY = 985246249143863
-API_SECRET = 9VedwhjYuHoNrro0-AGyfE-MVyg
-VITE_BASE_URL = "http://localhost:4000"
+
 
 
 

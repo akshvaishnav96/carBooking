@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { inputHandler, setCars } from "../slices/carSlice";
+import { clearInputs, inputHandler, setCars } from "../slices/carSlice";
 import { fetchHandler } from "../utils/handlers";
 
 export default function CarBooking({ item }) {
@@ -33,13 +33,18 @@ export default function CarBooking({ item }) {
       );
       dispatch(setCars(response.result.newData));
       dispatch(setMsgs(response.result.msgData));
+      dispatch(clearInputs())
     } catch (error) {
       console.log(error);
     }
   }
+  
   return (
     <>
       <form className=" space-y-6 w-[40%]  my-6" onSubmit={handleSubmit}>
+      <h3 className="text-3xl font-bold text-green-900 text-center mb-3 mt-8">
+        fill below details to book your ride
+      </h3>
         <div>
           <label
             htmlFor="name"
@@ -156,7 +161,7 @@ export default function CarBooking({ item }) {
             />
           </div>
         </div>
-        <div>
+        {startdate &&<div>
           <label
             htmlFor="enddate"
             className="block text-sm font-medium leading-6 text-gray-900"
@@ -169,7 +174,7 @@ export default function CarBooking({ item }) {
               name="enddate"
               type="date"
               required
-              min={today}
+              min={startdate}
               onChange={(e) =>
                 dispatch(
                   inputHandler({ name: e.target.name, value: e.target.value })
@@ -179,7 +184,7 @@ export default function CarBooking({ item }) {
               className=" p-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             />
           </div>
-        </div>
+        </div>}
         <button className="btn bg-blue-500 px-4 py-2 rounded text-white">
           Book Now
         </button>

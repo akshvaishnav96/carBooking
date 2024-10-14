@@ -9,6 +9,7 @@ const initialState = {
   brand: [],
   model: [],
   msgData :[],
+  
 
   brandInputVal: "",
   modelInputVal: "",

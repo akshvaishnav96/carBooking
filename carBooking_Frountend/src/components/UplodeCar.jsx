@@ -62,7 +62,8 @@ export default function UplodeCar() {
   }
 
   return (
-    <div>
+    <div className="w-[40%] m-auto mt-10">
+      
       <form className=" space-y-6" onSubmit={handleSubmit}>
         <div>
         
