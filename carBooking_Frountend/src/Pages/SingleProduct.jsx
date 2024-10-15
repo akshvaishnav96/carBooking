@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLoaderData, useParams } from "react-router-dom";
+import { useLoaderData, useNavigate, useParams } from "react-router-dom";
 import HashLoader from "react-spinners/HashLoader";
 import SingleProductCard from "../components/SingleProductCard";
 import { fetchHandler } from "../utils/handlers";
@@ -9,10 +9,16 @@ import CarBooking from "../components/CarBooking";
 
 export default function SingleProduct() {
   const dispatch = useDispatch();
+  const navigate = useNavigate()
+
   const {loading,singleCar} = useSelector(state=>state.cars)
   const { id } = useParams();
+  const {loggedUser} = useSelector((state)=>state.user)
 
   useEffect(() => {
+    if(!loggedUser?.username){
+      navigate("/login")
+    }
     async function getSingleproduct() {
       dispatch(setLoading(true))
       const response = await fetchHandler(`/api/v1/admin/cars/${id}`);      

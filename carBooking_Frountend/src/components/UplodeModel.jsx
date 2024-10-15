@@ -2,6 +2,7 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearInputs, inputHandler, setBrand, setModel, setSelectedBrand } from '../slices/carSlice'
 import { fetchHandler } from '../utils/handlers'
+import { toast } from 'react-toastify'
 
 export default function UplodeModel() {
   const dispatch = useDispatch()
@@ -22,8 +23,10 @@ async function handleSubmit(e){
    
    dispatch(setModel(data.result))
    dispatch(clearInputs())
+   toast.success("model added successfully")
  } catch (error) {
-  console.log(error.message);
+  toast.error(error.message)
+
  }
 }
 

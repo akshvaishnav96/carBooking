@@ -1,12 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {  toast } from 'react-toastify';
 import {
   setSelectedBrand,
   setSelectedModel,
   setSearchQuery,
-  inputHandler,
-  clearInputs,
   setModel,
   setCars,
   setBrand,
@@ -16,6 +14,7 @@ import { fetchHandler } from "../utils/handlers";
 
 const FilterComponent = ({ model, cars, brand }) => {
   const location = useLocation();
+  const [resetButtonDisabled,setResetButtonDisbled] = useState(false)
   const { selectedModel, selectedBrand, searchQuery,carsData } = useSelector(
     (state) => state.cars
   );
@@ -27,6 +26,7 @@ const FilterComponent = ({ model, cars, brand }) => {
   function handleSubmit(e) {
     e.preventDefault();
     let url = "";
+
 
     if (selectedBrand && selectedModel) {
       url = `?model=${selectedModel}&brand=${selectedBrand}`;
@@ -49,8 +49,11 @@ const FilterComponent = ({ model, cars, brand }) => {
     
 
       if(data.result){
+        toast.success("car filter successfully")
 
         dispatch(setCars(data.result))
+        setResetButtonDisbled(false)
+
       }
       
       
@@ -73,6 +76,7 @@ const FilterComponent = ({ model, cars, brand }) => {
   }
 
   async function resetHandler(){
+    setResetButtonDisbled(true)
     try {
       const responseModel = await fetchHandler(
         `/api/v1/admin/cars/model`,
@@ -88,13 +92,16 @@ const FilterComponent = ({ model, cars, brand }) => {
       );
 
   
-      window.history.replaceState("","","/")
       dispatch(setModel(responseModel.result));
       dispatch(setCars(carsDataResponse.result));
       dispatch(setBrand(responseBrand.result));
-      
+      toast.info("reset successfuly")
       dispatch(setSelectedBrand(""));
       dispatch(setSelectedModel(""));
+
+      setTimeout(()=>{
+        setResetButtonDisbled(false)
+      },10000)
       
  
     } catch (error) {
@@ -142,7 +149,7 @@ const FilterComponent = ({ model, cars, brand }) => {
         <button className="btn bg-blue-500 px-4 py-2 rounded text-white">
           Submit
         </button>
-        <button type="button" onClick={resetHandler} className="btn mx-5 bg-red-800 px-4 py-2 rounded text-white">
+        <button type="button" disabled={resetButtonDisabled} onClick={resetHandler} className="btn mx-5 bg-red-800 px-4 py-2 rounded text-white">
           reset
         </button>
       </form>

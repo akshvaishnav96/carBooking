@@ -10,13 +10,26 @@ import { setLoggedAdmin } from "../slices/carSlice";
 
 function Login() {
 
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const {loggedUser } = useSelector(state => state.user)
+  const { loggedAdmin } = useSelector(state => state.cars)
+  useEffect(()=>{
+  if(loggedAdmin?.username) return navigate("/admin")
+    if(loggedUser?.username) return navigate("/")
+  },[])
+
 
   const [error, setError] = useState({});
 
 
   const { email, password } = useSelector(state => state.user)
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+
+
+
+
+
+
   async function handleSubmit(e) {
     e.preventDefault();
     if (!email) setError((prev) => {
@@ -39,25 +52,29 @@ function Login() {
     try {
       const response = await fetchHandler("/api/v1/user/login", "post", formData);
 
-console.log(response.status);
 
 
       if(response.status){
-       if( response.result.role === "user" ){
+       if( response?.result?.role === "user" ){
         dispatch(setLoggedUser(response.result))
+        dispatch(clearInputs())
         toast.success("User login successfully ")
+        return navigate("/")
 
       }else{
         dispatch(setLoggedAdmin(response.result))
-        toast.success("Admin login successfully ")
-       }
         dispatch(clearInputs())
+        toast.success("Admin login successfully ")
         return navigate("/admin")
+       }
+      }else{
+      toast.error("something went wrong while login")
+
       }
     } catch (error) {
       console.log(error.message);
       
-      toast.error("something went wong while login")
+      toast.error("something went while while login")
 
     }
 

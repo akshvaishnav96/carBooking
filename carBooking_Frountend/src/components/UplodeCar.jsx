@@ -11,6 +11,7 @@ import {
   setSelectedBrand,
   setSelectedModel,
 } from "../slices/carSlice";
+import { toast } from "react-toastify";
 
 export default function UplodeCar() {
   const {
@@ -42,10 +43,16 @@ export default function UplodeCar() {
 
     try {
       const data = await fetchHandler("/api/v1/admin/cars", "post", formData);
-      dispatch(setCars(data.result));
-      dispatch(clearInputs());
+      if(data.result){
+        dispatch(setCars(data.result));
+        dispatch(clearInputs());
+        toast.success(`car ${selectedBrand} ${selectedModel} ${carNumberVal} added`)
+      }else{
+        throw new Error("something went wrong while uploading")
+      }
     } catch (error) {
-      console.log(error.message);
+      toast.error(error.message)
+
     }
   }
 

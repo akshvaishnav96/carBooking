@@ -41,9 +41,6 @@ export default function CarBooking({ item }) {
         dispatch(clearInputs())
         navigate("/")
         toast.success("successfully Booked")
-      }else{
-        console.log(response);
-        
       }
     } catch (error) {
       toast.success(error.message)

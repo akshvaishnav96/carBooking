@@ -19,8 +19,7 @@ try {
         if (!existUser) {
             return res.status(401).json({ status: false, msg: 'User not found',result:"" });
           }
-      
-          req.user = existUser; 
+      req.user = existUser;
           next(); // 
     }else{
         return res.status(401).json({ status: false, msg: 'please login first',result:"" });

@@ -31,10 +31,10 @@ async function registrationHandler(req, res) {
       }
     });
 
-    const userExist = await User.findOne({$or:[{email},{mobile}]});
-    
+    const userExist = await User.findOne({ $or: [{ email }, { mobile }] });
+
     if (userExist) {
-        let err =  userExist.email == email ? "email already used" : "mobile number already used"
+      let err = userExist.email == email ? "email already used" : "mobile number already used"
       throw new Error(err);
     }
 
@@ -49,15 +49,15 @@ async function registrationHandler(req, res) {
       "-password -refreshToken"
     );
 
-    res.status(201).json({status:true,result:newuser,msg:"successfully Added"});
+    res.status(201).json({ status: true, result: newuser, msg: "successfully Added" });
   } catch (error) {
-    res.status(400).json({ status: false,result:"", msg: error.message });
+    res.status(400).json({ status: false, result: "", msg: error.message });
   }
 }
 
 async function loginHandler(req, res) {
-  
-try {
+
+  try {
     const alreadyAccessToken = await req.cookies.accessToken;
     if (alreadyAccessToken) {
       const jwtverify = jwt.verify(
@@ -66,34 +66,34 @@ try {
       );
       const _id = jwtverify.id;
       const authorizedUser = await User.findById({ _id }).select("-password -refreshToken");
-  
+
       if (authorizedUser) {
         throw new Error("already logged in Logout First to login again")
       }
     }
-  
+
     const { email, password } = req.body;
 
-    
+
     if (!email) {
       throw new Error("Please enter username or email to login");
     }
-  
+
     const existUser = await User.findOne({ email: email });
-  
+
     if (!existUser) {
       throw new Error("user Not Exist please Enter Valid Details");
     }
-  
+
     if (!password) {
       throw new Error("password is required");
     }
-  
-    const verifyUser = await existUser.isPasswordValid(password);  
+
+    const verifyUser = await existUser.isPasswordValid(password);
     if (!verifyUser) {
       throw new Error("user Details Not Matched");
     }
-  
+
     const { accessToken, refreshToken, userId } =
       await generateAccessTokenAndRefreshToken(existUser._id);
 
@@ -105,28 +105,63 @@ try {
       ),
     };
     const user = await User.findById(userId).select("-password -refreshToken ");
-  
-    
+
+
+    req.user = user; 
     res.cookie("accessToken", accessToken, cookieOption)
-      res.status(200).json({
-        status: true,
-        msg: "User Logged In  Successfully",
-        result: user,
-      });
-} catch (error) {
+    res.status(200).json({
+      status: true,
+      msg: "User Logged In  Successfully",
+      result: user,
+    });
+  } catch (error) {
+
+    res.status(400).json({ status: false, result: "", msg: error.message })
+  }
+}
+
+
+
+function getRentCarhandler(req, res) {
+}
+
+function uplodeRentCarhandler(req, res) { }
+
+
+
+async function logoutHandler(req, res){
+
   
-  res.status(400).json({status:false,result:"",msg:error.message})
+  try {
+  await User.findByIdAndUpdate(req.user._id, {
+      $unset: {
+        refreshToken: 0,
+      },
+    });
+
+    let cookieOption = {
+      httpOnly: true,
+      secure: true,
+    };
+  
+    res.status(200).
+      clearCookie("accessToken", cookieOption)
+      .json({ status: true, result: "", msg: "user Successfully Logout" });
+  } catch (error) {
+    
+    res.status(400).json({status:false,result:"",msg:error.message})
+  }
 }
+
+
+
+function loginCheck(req,res){
+  if(req.user){
+    res.status(200).json({msg:"user already logged in" , result:req.user,status:true})
+  }else{
+    res.status(400).json({msg:"not logged in" , result:"",status:false});
+  }
 }
-
-
-
-function getRentCarhandler(req, res) {  
-}
-
-function uplodeRentCarhandler(req, res) {}
-
-function getSingleCar(req, res) {}
 
 
 
@@ -135,6 +170,6 @@ export {
   loginHandler,
   getRentCarhandler,
   uplodeRentCarhandler,
-  getSingleCar,
-
+logoutHandler,
+loginCheck
 };

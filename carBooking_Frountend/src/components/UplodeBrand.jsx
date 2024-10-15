@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { clearInputs, inputHandler, setBrand } from '../slices/carSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import {fetchHandler} from "../utils/handlers"
+import { toast } from 'react-toastify';
 
 
 
@@ -17,8 +18,9 @@ export default function UplodeBrand() {
      const data = await fetchHandler("/api/v1/admin/cars/brand","post",formData)
      dispatch(setBrand(data.result))
      dispatch(clearInputs())
+     toast.success(`${brandInputVal} added successfully`)
    } catch (error) {
-    console.log(error.message);
+    toast.error(error.message)
    }
   }
 

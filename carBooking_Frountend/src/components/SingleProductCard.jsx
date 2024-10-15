@@ -1,14 +1,16 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FaStar } from "react-icons/fa6";
 import CarBooking from './CarBooking';
-import {useLocation} from "react-router-dom"
+import {useLocation, useNavigate} from "react-router-dom"
 
 export default function SingleProductCard({ item }) {
 
   const dispatch = useDispatch()
   
 const BASE_URL = import.meta.env.VITE_BASE_URL
+
+
 
 
 
@@ -48,7 +50,7 @@ const BASE_URL = import.meta.env.VITE_BASE_URL
           ) :<CarBooking item={item} /> }
         </div>
      
-        <img src={`${BASE_URL}${item.images}`} alt="" srcSet="" className='object-fit w-[30vw] h-[20rem]' />
+        <img src={`${item.images}`} alt="" srcSet="" className='object-fit w-[30vw] h-[20rem]' />
       </div>}
     </>
   )

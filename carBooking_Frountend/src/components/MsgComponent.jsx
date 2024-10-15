@@ -21,7 +21,7 @@ export default function MsgComponent({ item }) {
         <div class="flex items-center">
           <img
             class="w-25 h-25 rounded-full mr-4"
-            src={`${BASE_URL}${item.image}`}
+            src={`${item.image}`}
             alt="Avatar of Jonathan Reinink"
           />
         </div>

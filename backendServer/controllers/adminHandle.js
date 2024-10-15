@@ -4,6 +4,8 @@ import { Model } from "../schema/modelSchema.js";
 import fs from "fs/promises";
 import { Car } from "../schema/carSchema.js";
 import { Msg } from "../schema/messageSchema.js";
+import {fileUplode} from "../utils/cloudnary.js"
+
 
 async function addBrandHandler(req, res) {
   try {
@@ -55,14 +57,17 @@ async function addCarHandler(req, res) {
     if (!description) throw new Error("Car description is required");
     if (!carnumber) throw new Error("Car Number is required");
 
-    const imagesPath = images.map((item) => "/images/" + item.originalname);
-
+    // const imagesPath = images.map((item) => "/images/" + item.originalname);  // for server image adding
+    
+    const imagesPath = await fileUplode(images[0].path);
+    console.log(imagesPath);
+    
     const car = await Car.create({
       brand,
       model,
       description,
       carnumber,
-      images: imagesPath ? imagesPath : [],
+      images: imagesPath ? [imagesPath.url ]: [],
     });
 
     if (!car) throw new Error("car not uploded successfully");

@@ -25,7 +25,7 @@ const Card = ({ item }) => {
   return (
     <div className="w-96 ml-2 flex flex-col items-center bg-white shadow-md rounded-xl transition-transform duration-500 hover:scale-105 hover:shadow-xl">
       <img
-        src={`${import.meta.env.VITE_BASE_URL}${item.images}`}
+        src={`${item.images}`}
         alt="Product"
         className="h-48 w-96 rounded-t-xl"
       />{" "}
