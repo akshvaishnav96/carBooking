@@ -22,7 +22,7 @@ const fileUplode = async (localFilePath) => {
 
     fs.unlinkSync(localFilePath);
     return response;
-  } catch (error) {
+  } catch (error) {    
     fs.unlinkSync(localFilePath);
     return null;
   }

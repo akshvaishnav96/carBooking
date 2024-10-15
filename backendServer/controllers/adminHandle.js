@@ -237,6 +237,57 @@ async function fetchSingleUser(req, res) {
   }
 }
 
+async function deleteModelHandler(req, res) {
+  try {
+    const id = req.params.id;
+    const modelData = await Model.findByIdAndDelete(id);
+
+    if (!modelData) throw new Error("nothing to delete something went wrong");
+
+    const newData = await Model.find({});
+
+    res
+      .status(200)
+      .json({ status: true, msg: "Model deleted Successfully", result: newData });
+  } catch (error) {
+    res.status(400).json({ status: false, msg: error.message, result: "" });
+  }
+}
+
+async function deleteBrandHandler(req, res) {
+  try {
+    const id = req.params.id;
+    const brandData = await Brand.findByIdAndDelete(id);
+
+    if (!brandData) throw new Error("nothing to delete something went wrong");
+
+    const newData = await Brand.find({});
+
+    res
+      .status(200)
+      .json({ status: true, msg: "Brand deleted Successfully", result: newData });
+  } catch (error) {
+    res.status(400).json({ status: false, msg: error.message, result: "" });
+  }
+}
+
+async function deleteMsgsHandler(req, res) {
+  try {
+    const id = req.params.id;
+    const msgData = await Msg.findByIdAndDelete(id);
+
+    if (!msgData) throw new Error("nothing to delete something went wrong");
+
+    const newData = await Msg.find({});
+
+    res
+      .status(200)
+      .json({ status: true, msg: "Msg delete Successfully", result: newData });
+  } catch (error) {
+    res.status(400).json({ status: false, msg: error.message, result: "" });
+  }
+}
+
 async function getSingleCars(req, res) {
   try {
     const id = req.params.id;
@@ -277,5 +328,8 @@ export {
   getSingleCars,
   deleteCarHandler,
   updateCarHandler,
-  getMsgs
+  getMsgs,
+  deleteModelHandler,
+  deleteBrandHandler,
+  deleteMsgsHandler
 };

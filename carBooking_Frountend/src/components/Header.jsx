@@ -57,9 +57,9 @@ async function handleLogout() {
 
   return (
 <>
-<ToastContainer autoClose={1000}/>
-{console.log(loggedAdmin,loggedUser)
-}
+<ToastContainer autoClose={10000}/>
+
+
     <div className=' bg-gradient-to-t from-slate-500 to-slate-800 flex justify-between items-center h-[6rem] max-w-full mx-auto px-4 text-white'>
     <h1 className='text-3xl font-bold font-serif'>
       <Link to="/">Car Hub</Link>

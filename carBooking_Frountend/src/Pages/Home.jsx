@@ -8,6 +8,8 @@ import Card from "../components/Card";
 export default function Home() {
   const dispatch = useDispatch();
   const data = useLoaderData();
+  console.log(data);
+  
   const {model,carsData,brand} = useSelector((state)=>state.cars)
 
   const [loading, setLoading] = useState(true);
@@ -20,9 +22,9 @@ export default function Home() {
 
   useEffect(()=>{
       
-      dispatch(setCars(data.cars.result))
-      dispatch(setModel(data.model.result))
-      dispatch(setBrand(data.brand.result))
+      dispatch(setCars(data.cars.data.result))
+      dispatch(setModel(data.model.data.result))
+      dispatch(setBrand(data.brand.data.result))
   },[])
 
   if (loading) {

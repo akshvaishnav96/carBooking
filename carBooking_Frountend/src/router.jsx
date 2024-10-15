@@ -62,55 +62,23 @@ const router = createBrowserRouter([
           {
             path: "msgs",
             element: <Msgs />,
-            loader: async () => {
-              try {
-                const msgs = await fetchHandler("/api/v1/admin/msg", "get")
-                return msgs
-              } catch (error) {
-                console.log(error.message);
-
-              }
-            }
+           
           },
 
           {
             path: "brand",
             element: <UplodeBrand />,
-            loader: async () => {
-              try {
-                const msgs = await fetchHandler("/api/v1/admin/msg", "get")
-                return msgs
-              } catch (error) {
-                console.log(error.message);
-
-              }
-            }
+          
           },
           {
             path: "model",
             element: <UplodeModel />,
-            loader: async () => {
-              try {
-                const msgs = await fetchHandler("/api/v1/admin/msg", "get")
-                return msgs
-              } catch (error) {
-                console.log(error.message);
-
-              }
-            }
+           
           },
           {
             path: "addcar",
             element: <UplodeCar />,
-            loader: async () => {
-              try {
-                const msgs = await fetchHandler("/api/v1/admin/msg", "get")
-                return msgs
-              } catch (error) {
-                console.log(error.message);
-
-              }
-            }
+            
           },
 
 

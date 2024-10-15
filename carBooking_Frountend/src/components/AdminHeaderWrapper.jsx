@@ -14,7 +14,6 @@ export default function AdminHeaderWrapper() {
 
   useEffect(() => {
     const isAuthenticated = async () => {
-      // const response =  await fetchHandler("/api/v1/user/logincheck")
 
       let userData = JSON.parse(localStorage.getItem("user"))
 

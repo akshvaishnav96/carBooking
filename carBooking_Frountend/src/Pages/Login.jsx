@@ -55,20 +55,20 @@ function Login() {
 
 
 
-      if(response.status){
-       if( response?.result?.role === "user" ){
+      if(response.data.status){
+       if( response.data.result?.role === "user" ){
 
-        localStorage.setItem("user",JSON.stringify(response.result))
+        localStorage.setItem("user",JSON.stringify(response.data.result))
 
-        dispatch(setLoggedUser(response.result))
+        dispatch(setLoggedUser(response.data.result))
         dispatch(clearInputs())
         toast.success("User login successfully ")
         return navigate("/")
 
       }else{
-        localStorage.setItem("user",JSON.stringify(response.result))
+        localStorage.setItem("user",JSON.stringify(response.data.result))
 
-        dispatch(setLoggedAdmin(response.result))
+        dispatch(setLoggedAdmin(response.data.result))
        
         dispatch(clearInputs())
         toast.success("Admin login successfully ")

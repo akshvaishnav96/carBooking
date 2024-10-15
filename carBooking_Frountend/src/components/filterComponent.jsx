@@ -48,10 +48,10 @@ const FilterComponent = ({ model, cars, brand }) => {
       const data = await fetchHandler(query,"get");
     
 
-      if(data.result){
+      if(data.data.result){
         toast.success("car filter successfully")
 
-        dispatch(setCars(data.result))
+        dispatch(setCars(data.data.result))
         setResetButtonDisbled(false)
 
       }
@@ -69,7 +69,7 @@ const FilterComponent = ({ model, cars, brand }) => {
         `/api/v1/admin/cars/model?brand=${e.target.value}`,
         "get"
       );
-      dispatch(setModel(response.result));
+      dispatch(setModel(response.data.result));
     } catch (error) {
       console.log(error.message);
     }
@@ -92,9 +92,9 @@ const FilterComponent = ({ model, cars, brand }) => {
       );
 
   
-      dispatch(setModel(responseModel.result));
-      dispatch(setCars(carsDataResponse.result));
-      dispatch(setBrand(responseBrand.result));
+      dispatch(setModel(responseModel.data.result));
+      dispatch(setCars(carsDataResponse.data.result));
+      dispatch(setBrand(responseBrand.data.result));
       toast.info("reset successfuly")
       dispatch(setSelectedBrand(""));
       dispatch(setSelectedModel(""));
@@ -111,14 +111,6 @@ const FilterComponent = ({ model, cars, brand }) => {
 
   return (
     <div className="max-w-3xl mx-auto p-4 space-y-6">
-      {/* <div>
-        <input
-          type="text"
-          placeholder="Search by name"
-          className="w-full p-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          onChange={(e) => useDispatch(setSearchQuery(e.target.value))}
-        />
-      </div> */}
       <form className=" space-y-6" onSubmit={handleSubmit}>
         <div>
           <select
@@ -146,7 +138,7 @@ const FilterComponent = ({ model, cars, brand }) => {
             ))}
           </select>
         </div>
-        <button className="btn bg-blue-500 px-4 py-2 rounded text-white">
+        <button disabled={!selectedBrand && !selectedModel} className="btn bg-blue-500 px-4 py-2 rounded text-white">
           Submit
         </button>
         <button type="button" disabled={resetButtonDisabled} onClick={resetHandler} className="btn mx-5 bg-red-800 px-4 py-2 rounded text-white">

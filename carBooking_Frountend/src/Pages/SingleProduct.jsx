@@ -27,7 +27,7 @@ export default function SingleProduct() {
     async function getSingleproduct() {
       dispatch(setLoading(true))
       const response = await fetchHandler(`/api/v1/admin/cars/${id}`);      
-      dispatch(setSingleCar(response.result))
+      dispatch(setSingleCar(response.data.result))
       dispatch(setLoading(false))   
     }
       getSingleproduct();

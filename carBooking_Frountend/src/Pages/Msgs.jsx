@@ -7,18 +7,7 @@ import MsgComponent from '../components/MsgComponent';
 
 export default function Cart() {
 
-  const msgs  = useLoaderData();
-  const dispatch = useDispatch();
-
-  
-  
   const { msgData } = useSelector((state) => state.cars);
-
-
-  useEffect(()=>{
-    dispatch(setMsgData(msgs.result))
-  },[msgData])
-
 
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
