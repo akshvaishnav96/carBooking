@@ -11,36 +11,33 @@ import 'react-toastify/dist/ReactToastify.css';
 const Header = () => {
   const dispatch=useDispatch()
   const navigate = useNavigate()
-  const navItems = [ 
-    { id: 1, text: 'admin', nav: "/admin" },
-  ];
+ 
  
   const {loggedUser} = useSelector(state=>state.user)
   const {loggedAdmin} = useSelector(state=>state.cars)
 
+  console.log(loggedAdmin,loggedUser);
+  
 
-useEffect(()=>{
-  async function loginCheck(){
-    try {
-     const response =  await fetchHandler("/api/v1/user/logincheck")
-     
-     if(response.result){
-      if(response.result.role === "user"){
-          dispatch(setLoggedUser(response.result))
-      }else{
-        dispatch(setLoggedAdmin(response.result))
-
+  useEffect(()=>{
+    let loggedLocalUser = JSON.parse(localStorage.getItem("user"))
+    
+    if(loggedLocalUser){
+      if(loggedLocalUser.role === "user"){
+        dispatch(setLoggedUser(loggedLocalUser));
       }
-     }
-    } catch (error) {
-      console.log(error.message);
-      
+      if(loggedLocalUser.role === "admin"){
+        dispatch(setLoggedAdmin(loggedLocalUser))
+      }
     }
 
-  }
-  loginCheck()
- 
-},[])
+    console.log(loggedLocalUser);
+    
+  },[])
+
+
+
+
 
 async function handleLogout() {
   try {
@@ -48,6 +45,7 @@ async function handleLogout() {
       
    
         toast.success("successfully logout")
+        localStorage.removeItem("user");
         dispatch(setLoggedAdmin(""));
         dispatch(setLoggedUser(""));
         navigate("/")
@@ -60,6 +58,8 @@ async function handleLogout() {
   return (
 <>
 <ToastContainer autoClose={1000}/>
+{console.log(loggedAdmin,loggedUser)
+}
     <div className=' bg-gradient-to-t from-slate-500 to-slate-800 flex justify-between items-center h-[6rem] max-w-full mx-auto px-4 text-white'>
     <h1 className='text-3xl font-bold font-serif'>
       <Link to="/">Car Hub</Link>

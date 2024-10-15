@@ -14,10 +14,15 @@ export default function SingleProduct() {
   const {loading,singleCar} = useSelector(state=>state.cars)
   const { id } = useParams();
   const {loggedUser} = useSelector((state)=>state.user)
+  const {loggedAdmin} = useSelector((state)=>state.cars)
 
   useEffect(() => {
     if(!loggedUser?.username){
       navigate("/login")
+    }
+
+    if(loggedAdmin?.role){
+      navigate("/admin")
     }
     async function getSingleproduct() {
       dispatch(setLoading(true))

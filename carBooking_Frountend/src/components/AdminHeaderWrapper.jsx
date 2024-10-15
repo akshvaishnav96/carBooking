@@ -1,26 +1,45 @@
 import React, { useEffect } from 'react'
 import { Link, Outlet, redirect, useNavigate } from 'react-router-dom';
-import { fetchHandler } from '../utils/handlers';
-import {toast} from "react-toastify"
-import {useSelector,useDispatch}from "react-redux"
-import { setLoggedAdmin } from '../slices/carSlice';
-import { setLoggedUser } from '../slices/userSlice';
+import {useDispatch}from "react-redux"
+
 export default function AdminHeaderWrapper() {
 
   let navigate = useNavigate()
 
   let dispatch = useDispatch()
 
-  const {loggedUser} = useSelector((state)=>state.user)
-  const {loggedAdmin} = useSelector((state)=>state.cars)
+  // const {loggedUser} = useSelector((state)=>state.user)
+  // const {loggedAdmin} = useSelector((state)=>state.cars)
 
 
   useEffect(() => {
     const isAuthenticated = async () => {
-      const response =  await fetchHandler("/api/v1/user/logincheck")
+      // const response =  await fetchHandler("/api/v1/user/logincheck")
+
+      let userData = JSON.parse(localStorage.getItem("user"))
+
+      console.log(userData);
       
-      if(loggedUser?.username) navigate("/");
-      if (!loggedAdmin?.username) navigate("/login");
+     if(!userData){
+        return navigate("/login")
+     }
+
+      if( userData && userData.role == "admin"){
+        return navigate("/admin")
+      }
+
+      if( userData && userData.role == "user"){
+        return navigate("/")
+      }
+
+      
+
+    
+
+
+      
+      // if(loggedUser?.username) navigate("/");
+      // if (!loggedAdmin?.username) navigate("/login");
     }
     isAuthenticated()
 

@@ -14,10 +14,11 @@ function Login() {
   const navigate = useNavigate()
   const {loggedUser } = useSelector(state => state.user)
   const { loggedAdmin } = useSelector(state => state.cars)
+
   useEffect(()=>{
   if(loggedAdmin?.username) return navigate("/admin")
     if(loggedUser?.username) return navigate("/")
-  },[])
+  },[loggedAdmin,loggedUser])
 
 
   const [error, setError] = useState({});
@@ -56,20 +57,25 @@ function Login() {
 
       if(response.status){
        if( response?.result?.role === "user" ){
+
+        localStorage.setItem("user",JSON.stringify(response.result))
+
         dispatch(setLoggedUser(response.result))
         dispatch(clearInputs())
         toast.success("User login successfully ")
         return navigate("/")
 
       }else{
+        localStorage.setItem("user",JSON.stringify(response.result))
+
         dispatch(setLoggedAdmin(response.result))
+       
         dispatch(clearInputs())
         toast.success("Admin login successfully ")
         return navigate("/admin")
        }
       }else{
       toast.error("something went wrong while login")
-
       }
     } catch (error) {
       console.log(error.message);
@@ -81,7 +87,7 @@ function Login() {
 
   }
 
-
+ 
 
 
   return (
