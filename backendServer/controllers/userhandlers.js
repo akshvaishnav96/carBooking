@@ -68,7 +68,8 @@ async function loginHandler(req, res) {
       const authorizedUser = await User.findById({ _id }).select("-password -refreshToken");
 
       if (authorizedUser) {
-        throw new Error("already logged in Logout First to login again")
+        // throw new Error("already logged in Logout First to login again")
+        return res.status(302).json({msg:"user already logged in" ,result:authorizedUser,status:"false"})
       }
     }
 
@@ -107,7 +108,6 @@ async function loginHandler(req, res) {
     const user = await User.findById(userId).select("-password -refreshToken ");
 
 
-    req.user = user; 
     res.cookie("accessToken", accessToken, cookieOption)
     res.status(200).json({
       status: true,
@@ -156,6 +156,8 @@ async function logoutHandler(req, res){
 
 
 function loginCheck(req,res){
+
+  
   if(req.user){
     res.status(200).json({msg:"user already logged in" , result:req.user,status:true})
   }else{
