@@ -6,12 +6,10 @@ async function fetchHandler(url,method="get",data=""){
 try {
     
     const response = await axios[method](`${BASE_URL}${url}`,data)
-    if(!response.data.status){
-        throw new Error(response.data)
-    }
-    return response.data
+ 
+    return response
 } catch (error) {
-    return error.message
+    return error
 }
 }
 

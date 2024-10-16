@@ -1,29 +1,47 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearInputs, inputHandler, setBrand, setModel, setSelectedBrand } from '../slices/carSlice'
 import { fetchHandler } from '../utils/handlers'
 import { toast } from 'react-toastify'
+import ButtonWithDelete from "../components/ButtonWithDelete"
 
 export default function UplodeModel() {
   const dispatch = useDispatch()
+  const [error, setError] = useState({});
 
-  const {brand,modelInputVal,selectedBrand}  = useSelector((state)=>state.cars)
+
+  const {brand,modelInputVal,selectedBrand,model}  = useSelector((state)=>state.cars)
   
 async function handleSubmit(e){
   e.preventDefault()
   
+  if (!selectedBrand) setError((prev) => {
+    return { ...prev, brand: "brand field is required" }
+  })
+
+
+  if (!modelInputVal) setError((prev) => {
+    return { ...prev, model: "model field is required" }
+  })
+
+  if(!selectedBrand && !modelInputVal) return ;
+
   const formData = {
     brand:selectedBrand,
     model:modelInputVal
   }
+
   
  try {
    const data = await fetchHandler("/api/v1/admin/cars/model","post",formData)
-
-   
-   dispatch(setModel(data.result))
-   dispatch(clearInputs())
-   toast.success("model added successfully")
+   if (data.status < 400) {
+     dispatch(setModel(data.data.result))
+    dispatch(clearInputs());
+    toast.success(`${modelInputVal} added successfully`);
+    setError("");
+  } else {
+    toast.error(data.response.data.msg);
+  }
  } catch (error) {
   toast.error(error.message)
 
@@ -43,11 +61,6 @@ async function handleSubmit(e){
    </div>
 
    <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-     {/* {errorMessage && (
-       <div className="text-red-500 text-center mb-4">
-         {errorMessage}
-       </div>
-     )} */}
      <div>
        <label
          htmlFor="model"
@@ -65,6 +78,7 @@ async function handleSubmit(e){
            value={modelInputVal}
            className="p-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
          />
+         {error?.model && <p className='text-red-500'>{error.model}</p>}
        </div>
        <div className='mt-2'>
      
@@ -80,6 +94,8 @@ async function handleSubmit(e){
               <option value={item.brand}>{item.brand}</option>
             ))}
           </select>
+         {error?.brand && <p className='text-red-500'>{error.brand}</p>}
+
        </div>
      </div>
 
@@ -99,7 +115,12 @@ async function handleSubmit(e){
  
    </div>
  </form>
-
+ <div className=" ml-9 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8 p-4">
+      {model &&
+        model.map((item) => (
+            <ButtonWithDelete item={item} deletePath="model" />
+        ))}
+          </div>
 </div>
   )
 }

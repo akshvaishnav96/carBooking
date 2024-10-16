@@ -1,8 +1,28 @@
 import React from "react";
 import {Link} from "react-router-dom"
+import { MdDelete } from "react-icons/md";
+import { setMsgData } from "../slices/carSlice";
+import { toast } from "react-toastify";
+import {fetchHandler} from "../utils/handlers"
+import {useDispatch} from "react-redux"
+
 
 export default function MsgComponent({ item }) {
-  const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+const dispatch = useDispatch();
+
+  async function deleteMsg(id) {
+    try {
+      const response = await fetchHandler(`/api/v1/admin/msg/${id}`, "delete");
+      dispatch(setMsgData(response.data.result));
+      toast.success("successfully deleted")
+    } catch (error) {
+      console.log(error.message);
+      toast.success("Something went wrong while Deleting")
+
+    }
+  }
+
 
   return (
     <>
@@ -48,6 +68,14 @@ export default function MsgComponent({ item }) {
             <p class=" my-2text-sm text-gray-700 flex items-center">
               Address : {item.address}
             </p>
+            <div className="flex items-center gap-5">
+             
+              <MdDelete
+                onClick={() => deleteMsg(item._id)}
+                className="text-2xl text-red-700 cursor-pointer"
+              />
+
+              </div>
 
           </div>
       </div>

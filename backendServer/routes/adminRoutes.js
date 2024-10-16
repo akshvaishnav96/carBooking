@@ -3,7 +3,10 @@ import {
   addBrandHandler,
   addCarHandler,
   addModelhandler,
+  deleteBrandHandler,
   deleteCarHandler,
+  deleteModelHandler,
+  deleteMsgsHandler,
   fetchAllUsers,
   fetchSingleUser,
   getAllBrands,
@@ -38,6 +41,9 @@ adminRouter
 
 /////////////////////////////////////////////////////
 adminRouter.route("/cars/:id").delete(auth,deleteCarHandler)
+adminRouter.route("/cars/model/:id").delete(auth,deleteModelHandler)
+adminRouter.route("/cars/brand/:id").delete(auth,deleteBrandHandler)
+adminRouter.route("/msg/:id").delete(auth,deleteMsgsHandler)
 
 ///////////////////////////////////////////////////////
 adminRouter.route("/cars/:id").patch(auth,updateCarHandler)

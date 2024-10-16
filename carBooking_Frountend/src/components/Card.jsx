@@ -13,7 +13,7 @@ const Card = ({ item }) => {
   async function deleteCar(id) {
     try {
       const response = await fetchHandler(`/api/v1/admin/cars/${id}`, "delete");
-      dispatch(setCars(response.result));
+      dispatch(setCars(response.data.result));
       toast.success("successfully deleted")
     } catch (error) {
       console.log(error.message);

@@ -12,8 +12,8 @@ export default function Admin() {
   const dispatch = useDispatch();
   const data = useLoaderData();
   
-  const { model, carsData, brand,msgData } = useSelector((state) => state.cars);
-
+  
+  const { carsData } = useSelector((state) => state.cars);
   const [loading, setLoading] = useState(true);
 
  
@@ -26,10 +26,10 @@ export default function Admin() {
   }, [data]);
 
   useEffect(() => {
-    dispatch(setCars(data.cars.result));
-    dispatch(setModel(data.model.result));
-    dispatch(setBrand(data.brand.result));
-    dispatch(setMsgData(data.msgs.result));
+    dispatch(setCars(data.cars.data.result));
+    dispatch(setModel(data.model.data.result));
+    dispatch(setBrand(data.brand.data.result));
+    dispatch(setMsgData(data.msgs.data.result));
   }, [dispatch]);
 
   if (loading) {

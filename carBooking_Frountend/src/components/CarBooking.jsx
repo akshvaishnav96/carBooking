@@ -36,8 +36,8 @@ export default function CarBooking({ item }) {
       );
       if(response.status){
 
-        dispatch(setCars(response.result.newData));
-        dispatch(setMsgData(response.result.msgData));
+        dispatch(setCars(response.data.result.newData));
+        dispatch(setMsgData(response.data.result.msgData));
         dispatch(clearInputs())
         navigate("/")
         toast.success("successfully Booked")
