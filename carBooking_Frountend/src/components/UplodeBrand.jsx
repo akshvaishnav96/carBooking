@@ -85,6 +85,7 @@ export default function UplodeBrand() {
         </div>
       </form>
           <div className=" ml-9 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8 p-4">
+          
       {brand &&
         brand.map((item) => (
             <ButtonWithDelete item={item} deletePath="brand" />

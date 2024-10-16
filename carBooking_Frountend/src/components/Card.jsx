@@ -31,10 +31,10 @@ const Card = ({ item }) => {
       />{" "}
       <div className="px-4 py-3 w-full">
         <span className="text-gray-700 mr-3 uppercase text-xs">
-          {item.brand}
+          {item.brand.brand}
         </span>
         <p className="text-lg font-bold text-black text-[2rem] truncate block capitalize">
-         {item.brand}-{item.model}
+         {item.brand.brand}-{item.model.model}
         </p>
         {location.pathname.startsWith("/admin") && <p className="text-lg font-semibold text-black">{item.carnumber.toUpperCase()}</p>}
 

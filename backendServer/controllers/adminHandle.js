@@ -4,8 +4,8 @@ import { Model } from "../schema/modelSchema.js";
 import fs from "fs/promises";
 import { Car } from "../schema/carSchema.js";
 import { Msg } from "../schema/messageSchema.js";
-import { fileUplode } from "../utils/cloudnary.js"
-
+import { fileUplode } from "../utils/cloudnary.js";
+import mongoose from "mongoose";
 
 async function addBrandHandler(req, res) {
   try {
@@ -35,7 +35,24 @@ async function addModelhandler(req, res) {
     const alreadyExist = await Model.findOne({ $and: [{ brand }, { model }] });
     if (alreadyExist) throw new Error("model already exist with this Brand");
     const result = await Model.create({ brand, model });
-    const newData = await Model.find({});
+    // const newData = await Model.find({});
+    const newData = await Model.aggregate([
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brand",
+        },
+      },
+      {
+        $addFields: {
+          brand: {
+            $first: "$brand",
+          },
+        },
+      },
+    ]);
 
     res
       .status(201)
@@ -93,16 +110,14 @@ async function addCarHandler(req, res) {
 }
 
 async function updateCarHandler(req, res) {
-
   try {
     const id = req.params.id;
     const { startdate, enddate, name, email, mobile, address } = req.body;
 
-
-    if (!email) throw new Error("email is required")
-    if (!name) throw new Error("name is required")
-    if (!mobile) throw new Error("mobile number is required")
-    if (!address) throw new Error("address  is required")
+    if (!email) throw new Error("email is required");
+    if (!name) throw new Error("name is required");
+    if (!mobile) throw new Error("mobile number is required");
+    if (!address) throw new Error("address  is required");
     const carData = await Car.findById(id);
     carData.startdate = new Date(startdate).toDateString();
     carData.enddate = new Date(enddate).toDateString();
@@ -113,26 +128,91 @@ async function updateCarHandler(req, res) {
     const msgResponse = await Msg.create({
       startdate: new Date(startdate).toDateString(),
       enddate: new Date(enddate).toDateString(),
-      carnumber: carData.carnumber,
-      brand: carData.brand,
-      model: carData.model,
-      carId: carData._id,
-      image: carData.images[0],
-      email, name, mobile, address
+      carDetails: carData._id,
+      email,
+      name,
+      mobile,
+      address,
     });
 
-    if (!msgResponse) throw new Error("something went wrong when add message")
+    if (!msgResponse) throw new Error("something went wrong when add message");
 
-    const newData = await Car.find({});
-    const msgData = await Msg.find({});
-  
-    
+    const newData = await Car.aggregate([
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brand",
+        },
+      },
+      {
+        $lookup: {
+          from: "models",
+          localField: "model",
+          foreignField: "_id",
+          as: "model",
+        },
+      },
+
+      {
+        $addFields: {
+          brand: { $first: "$brand" },
+          model: { $first: "$model" },
+        },
+      },
+    ]);
+    const msgData = await Msg.aggregate([
+      {
+        $lookup: {
+          from: "cars",
+          localField: "carDetails",
+          foreignField: "_id",
+          as: "carDetails",
+          pipeline:[
+            {
+              $lookup: {
+                from: "brands",
+                localField: "brand",
+                foreignField: "_id",
+                as: "brand",
+              },
+            },
+            {
+              $lookup: {
+                from: "models",
+                localField: "model",
+                foreignField: "_id",
+                as: "model",
+              },
+            },
+      
+            {
+              $addFields: {
+                brand: { $first: "$brand" },
+                model: { $first: "$model" },
+              },
+            },
+          ]
+        },
+      },
+      {
+        $addFields: {
+          carDetails: {
+            $first: "$carDetails",
+          },
+        },
+      },
+    ]);
+
     const loggedUser = await User.findById(req.user._id);
-    loggedUser.booking.push(msgResponse)
+    loggedUser.booking.push(msgResponse);
     loggedUser.save();
-    res
-      .status(200)
-      .json({ msg: "successfully updated", status: true, result: { newData, msgData } });
+    res.status(200).json({
+      msg: "successfully updated",
+      status: true,
+      result: { newData, msgData },
+    });
   } catch (error) {
     console.log(error.message);
 
@@ -158,7 +238,30 @@ async function deleteCarHandler(req, res) {
     );
 
     await Car.findByIdAndDelete(id);
-    const newData = await Car.find({});
+    const newData = await Car.aggregate([
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brand",
+        },
+      },
+      {
+        $lookup: {
+          from: "models",
+          localField: "model",
+          foreignField: "_id",
+          as: "model",
+        },
+      },
+      {
+        $addFields: {
+          brand: { $first: "$brand" },
+          model: { $first: "$model" },
+        },
+      },
+    ]);
 
     res
       .status(200)
@@ -183,12 +286,51 @@ async function getAllModels(req, res) {
 
   try {
     let result = null;
+
     if (brand) {
       result = await Model.find({ brand });
-    } else {
-      result = await Model.find({});
-    }
 
+      result = await Model.aggregate([
+        {
+          $match: {
+            brand: new mongoose.Types.ObjectId(brand),
+          },
+        },
+        {
+          $lookup: {
+            from: "brands",
+            localField: "brand",
+            foreignField: "_id",
+            as: "brand",
+          },
+        },
+        {
+          $addFields: {
+            brand: {
+              $first: "$brand",
+            },
+          },
+        },
+      ]);
+    } else {
+      result = await Model.aggregate([
+        {
+          $lookup: {
+            from: "brands",
+            localField: "brand",
+            foreignField: "_id",
+            as: "brand",
+          },
+        },
+        {
+          $addFields: {
+            brand: {
+              $first: "$brand",
+            },
+          },
+        },
+      ]);
+    }
 
     res
       .status(200)
@@ -204,17 +346,136 @@ async function getuplodedCars(req, res) {
     let result = "";
 
     if (brand && model) {
-      result = await Car.find({ $and: [{ brand }, { model }] });
+      result = await Car.aggregate([
+        {
+          $match: {
+            $and: [
+              { brand: new mongoose.Types.ObjectId(brand) },
+              { model: new mongoose.Types.ObjectId(model) },
+            ],
+          },
+        },
+        {
+          $lookup: {
+            from: "brands",
+            localField: "brand",
+            foreignField: "_id",
+            as: "brand",
+          },
+        },
+        {
+          $lookup: {
+            from: "models",
+            localField: "model",
+            foreignField: "_id",
+            as: "model",
+          },
+        },
+        {
+          $addFields: {
+            brand: { $first: "$brand" },
+            model: { $first: "$model" },
+          },
+        },
+      ]);
     } else if (brand) {
-      result = await Car.find({ brand });
+      result = await Car.aggregate([
+        {
+          $match: {
+            brand: new mongoose.Types.ObjectId(brand),
+          },
+        },
+        {
+          $lookup: {
+            from: "brands",
+            localField: "brand",
+            foreignField: "_id",
+            as: "brand",
+          },
+        },
+        {
+          $lookup: {
+            from: "models",
+            localField: "model",
+            foreignField: "_id",
+            as: "model",
+          },
+        },
+        {
+          $addFields: {
+            brand: { $first: "$brand" },
+            model: { $first: "$model" },
+          },
+        },
+      ]);
     } else if (model) {
-      result = await Car.find({ model });
+      result = await Car.aggregate([
+        {
+          $match: {
+            model: new mongoose.Types.ObjectId(model),
+          },
+        },
+        {
+          $lookup: {
+            from: "brands",
+            localField: "brand",
+            foreignField: "_id",
+            as: "brand",
+          },
+        },
+        {
+          $lookup: {
+            from: "models",
+            localField: "model",
+            foreignField: "_id",
+            as: "model",
+          },
+        },
+        {
+          $addFields: {
+            brand: { $first: "$brand" },
+            model: { $first: "$model" },
+          },
+        },
+        {
+          $project: {
+            createdAt: 0,
+            updatedAt: 0,
+          },
+        },
+      ]);
     } else {
-      result = await Car.find({});
+      result = await Car.aggregate([
+        {
+          $lookup: {
+            from: "brands",
+            localField: "brand",
+            foreignField: "_id",
+            as: "brand",
+          },
+        },
+        {
+          $lookup: {
+            from: "models",
+            localField: "model",
+            foreignField: "_id",
+            as: "model",
+          },
+        },
+        {
+          $addFields: {
+            brand: { $first: "$brand" },
+            model: { $first: "$model" },
+          },
+        },
+      ]);
     }
+
+    console.log(result);
+
     res.status(200).json({ msg: "success", status: true, result });
   } catch (error) {
-    res.status(400).json({ msg: "failed", status: false, result: "" });
+    res.status(400).json({ msg: error.message, status: false, result: "" });
   }
 }
 async function fetchAllUsers(req, res) {
@@ -250,9 +511,11 @@ async function deleteModelHandler(req, res) {
 
     const newData = await Model.find({});
 
-    res
-      .status(200)
-      .json({ status: true, msg: "Model deleted Successfully", result: newData });
+    res.status(200).json({
+      status: true,
+      msg: "Model deleted Successfully",
+      result: newData,
+    });
   } catch (error) {
     res.status(400).json({ status: false, msg: error.message, result: "" });
   }
@@ -267,9 +530,11 @@ async function deleteBrandHandler(req, res) {
 
     const newData = await Brand.find({});
 
-    res
-      .status(200)
-      .json({ status: true, msg: "Brand deleted Successfully", result: newData });
+    res.status(200).json({
+      status: true,
+      msg: "Brand deleted Successfully",
+      result: newData,
+    });
   } catch (error) {
     res.status(400).json({ status: false, msg: error.message, result: "" });
   }
@@ -305,13 +570,50 @@ async function getSingleCars(req, res) {
   }
 }
 
-
 async function getMsgs(req, res) {
-
-
   try {
-    const msg = await Msg.find({});
-
+    const msg = await Msg.aggregate([
+      {
+        $lookup: {
+          from: "cars",
+          localField: "carDetails",
+          foreignField: "_id",
+          as: "carDetails",
+          pipeline:[
+            {
+              $lookup: {
+                from: "brands",
+                localField: "brand",
+                foreignField: "_id",
+                as: "brand",
+              },
+            },
+            {
+              $lookup: {
+                from: "models",
+                localField: "model",
+                foreignField: "_id",
+                as: "model",
+              },
+            },
+      
+            {
+              $addFields: {
+                brand: { $first: "$brand" },
+                model: { $first: "$model" },
+              },
+            },
+          ]
+        },
+      },
+      {
+        $addFields: {
+          carDetails: {
+            $first: "$carDetails",
+          },
+        },
+      },
+    ])
 
     if (!msg) {
       throw new Error("Msgs not found");
@@ -337,5 +639,5 @@ export {
   getMsgs,
   deleteModelHandler,
   deleteBrandHandler,
-  deleteMsgsHandler
+  deleteMsgsHandler,
 };

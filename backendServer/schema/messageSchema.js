@@ -2,18 +2,11 @@ import mongoose from "mongoose";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const messageSchema = new mongoose.Schema({
-    carnumber:{
-        type:String,
-        required:true
-    } ,
-    brand:{
-        type:String,
-        required:true
+    carDetails:{
+        type:mongoose.Types.ObjectId,
+        ref:"Car"
     },
-    model:{
-        type:String,
-        required:true
-    },startdate:{
+    startdate:{
         type:Date,
         required:true
     },
@@ -21,13 +14,8 @@ const messageSchema = new mongoose.Schema({
         type:Date,
         required:true
     },
-    image:{
-        type:String,
-    },
-    carId:{
-        type:mongoose.Types.ObjectId,
-        ref:"Car"
-    },
+   
+   
     name:{
         type:String,
         required:true,

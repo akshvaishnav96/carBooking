@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { fetchHandler } from "../utils/handlers";
+import HashLoader from "react-spinners/HashLoader";
+
 import Card from "../components/Card";
 import {
   clearInputs,
@@ -28,6 +30,7 @@ export default function UplodeCar() {
   const dispatch = useDispatch();
 
   const [error, setError] = useState({});
+  const [loading, setloading] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -77,8 +80,9 @@ export default function UplodeCar() {
     }
 
     try {
+      setloading(true)
       const data = await fetchHandler("/api/v1/admin/cars", "post", formData);
-
+setloading(false);
       if (data.status < 400) {
         dispatch(setCars(data.data.result));
         dispatch(clearInputs());
@@ -134,7 +138,7 @@ export default function UplodeCar() {
           >
             <option value="">Select Car Brand</option>
             {brand?.map((item) => (
-              <option value={item.brand}>{item.brand}</option>
+              <option value={item._id}>{item.brand}</option>
             ))}
           </select>
          {error?.brand && <p className='text-red-500'>{error.brand}</p>}
@@ -150,7 +154,7 @@ export default function UplodeCar() {
             >
               <option value="">Select Car Model</option>
               {model?.map((item) => (
-                <option value={item.model}>{item.model}</option>
+                <option value={item._id}>{item.model}</option>
               ))}
             </select>
          {error?.model && <p className='text-red-500'>{error.model}</p>}
@@ -225,8 +229,8 @@ export default function UplodeCar() {
          {error?.image && <p className='text-red-500'>{error.image}</p>}
 
         </div>
-        <button className="btn bg-blue-500 px-4 py-2 rounded text-white">
-          Add
+        <button className={`btn ${loading ?"" :"bg-blue-500"} px-4 py-2 rounded text-white`} disabled={loading}>
+         {loading ? <HashLoader color="green"/> :  "Add"}
         </button>
       </form>
     </div>
