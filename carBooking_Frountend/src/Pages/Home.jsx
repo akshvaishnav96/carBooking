@@ -8,7 +8,6 @@ import Card from "../components/Card";
 export default function Home() {
   const dispatch = useDispatch();
   const data = useLoaderData();
-  console.log(data);
   
   const {model,carsData,brand} = useSelector((state)=>state.cars)
 

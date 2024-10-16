@@ -16,7 +16,7 @@ const Header = () => {
   const {loggedUser} = useSelector(state=>state.user)
   const {loggedAdmin} = useSelector(state=>state.cars)
 
-  console.log(loggedAdmin,loggedUser);
+
   
 
   useEffect(()=>{
@@ -31,9 +31,8 @@ const Header = () => {
       }
     }
 
-    console.log(loggedLocalUser);
     
-  },[])
+  },[dispatch])
 
 
 
@@ -57,8 +56,7 @@ async function handleLogout() {
 
   return (
 <>
-<ToastContainer autoClose={10000}/>
-
+<ToastContainer autoClose={1000}/>
 
     <div className=' bg-gradient-to-t from-slate-500 to-slate-800 flex justify-between items-center h-[6rem] max-w-full mx-auto px-4 text-white'>
     <h1 className='text-3xl font-bold font-serif'>

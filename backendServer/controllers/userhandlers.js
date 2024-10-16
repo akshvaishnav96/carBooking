@@ -1,5 +1,6 @@
 import { User } from "../schema/userSchema.js";
 import jwt from "jsonwebtoken";
+import {Msg} from "../schema/messageSchema.js"
 
 const generateAccessTokenAndRefreshToken = async function (userID) {
   try {
@@ -69,7 +70,7 @@ async function loginHandler(req, res) {
 
       if (authorizedUser) {
         // throw new Error("already logged in Logout First to login again")
-        return res.status(302).json({msg:"user already logged in" ,result:authorizedUser,status:"false"})
+        return res.status(302).json({ msg: "user already logged in", result: authorizedUser, status: "false" })
       }
     }
 
@@ -105,7 +106,7 @@ async function loginHandler(req, res) {
         Date.now() + Number(process.env.COOKIE_EXPIRY_FROM_BROWSER)
       ),
     };
-    const user = await User.findById(userId).select("-password -refreshToken ");
+    const user = await User.findById(userId).select("-password -refreshToken -_id  ");
 
 
     res.cookie("accessToken", accessToken, cookieOption)
@@ -129,11 +130,11 @@ function uplodeRentCarhandler(req, res) { }
 
 
 
-async function logoutHandler(req, res){
+async function logoutHandler(req, res) {
 
-  
+
   try {
-  await User.findByIdAndUpdate(req.user._id, {
+    await User.findByIdAndUpdate(req.user._id, {
       $unset: {
         refreshToken: 0,
       },
@@ -143,25 +144,82 @@ async function logoutHandler(req, res){
       httpOnly: true,
       secure: true,
     };
-  
+
     res.status(200).
       clearCookie("accessToken", cookieOption)
       .json({ status: true, result: "", msg: "user Successfully Logout" });
   } catch (error) {
-    
-    res.status(400).json({status:false,result:"",msg:error.message})
+
+    res.status(400).json({ status: false, result: "", msg: error.message })
   }
+}
+
+async function getAllUserBookings(req, res) {
+
+
+  try {
+    const userData = await User.aggregate([
+      {
+        $match: {
+          _id: req.user._id
+        },
+      }, {
+        $lookup: {
+          from: "msgs",
+          localField: "booking",
+          foreignField: "_id",
+          as: "userBookings"
+        }
+      }
+    ])
+
+   res.status(200).json({msg:"success",status:true,result:userData[0].userBookings})
+
+
+
+  } catch (error) {
+    res.status(400).json({msg:"failed",status:false,result:[]})
+
+  }
+
+
+}
+
+
+async function cancelBooking(req,res){
+
+
+console.log("asd");
+
+      try {
+          const id = req.params.id;
+
+          const msgData = await Msg.findByIdAndUpdate(id,{bookingStatus:"cancelled"},{new:true})
+console.log(msgData);
+
+          res.status(201).json({msg:"successfully cancelled",status:false,result:""})
+
+          
+      } catch (error) {
+        console.log(error);
+        
+      }
+    
+  
+
+
+
 }
 
 
 
-function loginCheck(req,res){
+function loginCheck(req, res) {
 
-  
-  if(req.user){
-    res.status(200).json({msg:"user already logged in" , result:req.user,status:true})
-  }else{
-    res.status(400).json({msg:"not logged in" , result:"",status:false});
+
+  if (req.user) {
+    res.status(200).json({ msg: "user already logged in", result: req.user, status: true })
+  } else {
+    res.status(400).json({ msg: "not logged in", result: "", status: false });
   }
 }
 
@@ -172,6 +230,8 @@ export {
   loginHandler,
   getRentCarhandler,
   uplodeRentCarhandler,
-logoutHandler,
-loginCheck
+  logoutHandler,
+  loginCheck,
+  getAllUserBookings,
+  cancelBooking
 };

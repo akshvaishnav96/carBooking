@@ -12,7 +12,6 @@ cloudinary.config({
 });
 
 const fileUplode = async (localFilePath) => {
-  console.log(localFilePath);
   
   try {
     if (!localFilePath) return null;

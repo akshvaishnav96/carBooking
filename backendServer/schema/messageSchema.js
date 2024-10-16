@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const messageSchema = new mongoose.Schema({
     carnumber:{
@@ -50,7 +51,15 @@ const messageSchema = new mongoose.Schema({
         required:true,
         trim:true,
     },
+    bookingStatus:{
+        type:String,
+        trim:true,
+        default:"booked"
+    }
     
 })
+
+messageSchema.plugin(mongooseAggregatePaginate)
+
 
 export const Msg = mongoose.model("Msg",messageSchema)

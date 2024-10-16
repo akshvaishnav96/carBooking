@@ -8,9 +8,9 @@ const initialState = {
   searchQuery: null,
   brand: [],
   model: [],
-  msgData :[],
-  loggedAdmin:[],
-  
+  msgData: [],
+  loggedAdmin: [],
+
 
   brandInputVal: "",
   modelInputVal: "",
@@ -21,11 +21,11 @@ const initialState = {
   selectedModel: "",
   startdate: "",
   enddate: "",
-  userNameVal:"",
-  addressVal:'',
-  mobileVal:"",
-  emailVal:""
-  
+  userNameVal: "",
+  addressVal: '',
+  mobileVal: "",
+  emailVal: ""
+
 };
 
 const carsSlice = createSlice({
@@ -42,13 +42,13 @@ const carsSlice = createSlice({
       state.carDescriptionVal = "";
       state.carImagesVal = "";
       state.carNumberVal = "";
-      state.startdate ="",
-      state.enddate = "",
-      (state.selectedBrand = ""), (state.selectedModel = "");
+      state.startdate = "",
+        state.enddate = "",
+        state.selectedBrand = "", state.selectedModel = "";
       state.addressVal = "",
-      state.mobileVal = "",
-      state.userNameVal = "",
-      state.emailVal = ""
+        state.mobileVal = "",
+        state.userNameVal = "",
+        state.emailVal = ""
 
     },
 
@@ -85,7 +85,7 @@ const carsSlice = createSlice({
     setMsgData: function (state, action) {
       state.msgData = action.payload;
     },
-    setLoggedAdmin :function(state,action) {
+    setLoggedAdmin: function (state, action) {
       state.loggedAdmin = action.payload
     }
   },

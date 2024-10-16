@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, redirect, useLocation, useNavigate } from "react-router-dom";
 import { clearInputs, inputHandler, setLoggedUser } from "../slices/userSlice";
 import { fetchHandler } from "../utils/handlers";
-import {toast} from "react-toastify"
+import { toast } from "react-toastify"
 import { setLoggedAdmin } from "../slices/carSlice";
 
 
@@ -12,24 +12,13 @@ function Login() {
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const {loggedUser } = useSelector(state => state.user)
+  const { loggedUser } = useSelector(state => state.user)
   const { loggedAdmin } = useSelector(state => state.cars)
 
-  useEffect(()=>{
-  if(loggedAdmin?.username) return navigate("/admin")
-    if(loggedUser?.username) return navigate("/")
-  },[loggedAdmin,loggedUser])
 
 
   const [error, setError] = useState({});
-
-
   const { email, password } = useSelector(state => state.user)
-
-
-
-
-
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -40,8 +29,6 @@ function Login() {
     if (!password) setError((prev) => {
       return { ...prev, password: "password is required" }
     })
-
-
 
     if (!email || !password) return
 
@@ -54,32 +41,42 @@ function Login() {
       const response = await fetchHandler("/api/v1/user/login", "post", formData);
 
 
+      if (response.status === 302) {
+        localStorage.setItem("user", JSON.stringify(response?.response.data.result))
+        if (response?.response.data.result.role === "user") {
+          dispatch(setLoggedUser(response?.response.data.result))
+          return navigate("/")
+        } else {
+          dispatch(setLoggedAdmin(response?.response.data.result))
+          return navigate("/admin")
+        }
+      }
 
-      if(response.data.status){
-       if( response.data.result?.role === "user" ){
+      if (response.data.status) {
+        if (response.data.result?.role === "user") {
 
-        localStorage.setItem("user",JSON.stringify(response.data.result))
+          localStorage.setItem("user", JSON.stringify(response.data.result))
 
-        dispatch(setLoggedUser(response.data.result))
-        dispatch(clearInputs())
-        toast.success("User login successfully ")
-        return navigate("/")
+          dispatch(setLoggedUser(response.data.result))
+          dispatch(clearInputs())
+          toast.success("User login successfully ")
+          return navigate("/")
 
-      }else{
-        localStorage.setItem("user",JSON.stringify(response.data.result))
+        } else {
+          localStorage.setItem("user", JSON.stringify(response.data.result))
 
-        dispatch(setLoggedAdmin(response.data.result))
-       
-        dispatch(clearInputs())
-        toast.success("Admin login successfully ")
-        return navigate("/admin")
-       }
-      }else{
-      toast.error("something went wrong while login")
+          dispatch(setLoggedAdmin(response.data.result))
+
+          dispatch(clearInputs())
+          toast.success("Admin login successfully ")
+          return navigate("/admin")
+        }
+      } else {
+        toast.error("something went wrong while login")
       }
     } catch (error) {
       console.log(error.message);
-      
+
       toast.error("something went while while login")
 
     }
@@ -87,7 +84,13 @@ function Login() {
 
   }
 
- 
+
+  // useEffect(() => {
+
+  //   const localUser = JSON.parse(localStorage.getItem("user"));
+  //   if (localUser.role === "user") { dispatch(setLoggedUser(localUser)) } else { dispatch(setLoggedUser(localUser)) }
+
+  // }, [dispatch])
 
 
   return (

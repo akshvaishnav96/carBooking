@@ -12,7 +12,6 @@ export default function ButtonWithDelete({item,deletePath}) {
     async function deleteHandler(id) {
         try {
           const response = await fetchHandler(`/api/v1/admin/cars/${deletePath}/${id}`, "delete");
-          console.log(response);
           
           if(deletePath === "brand"){
             dispatch(setBrand(response.data.result));

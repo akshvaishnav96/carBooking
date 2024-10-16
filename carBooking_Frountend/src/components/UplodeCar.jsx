@@ -113,7 +113,6 @@ export default function UplodeCar() {
         `/api/v1/admin/cars/model?brand=${e.target.value}`,
         "get"
       );
-      console.log(response);
 
       dispatch(setModel(response.data.result));
       

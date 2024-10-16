@@ -13,6 +13,7 @@ import AdminHeaderWrapper from "./components/AdminHeaderWrapper";
 import UplodeBrand from "./components/UplodeBrand";
 import UplodeModel from "./components/UplodeModel";
 import UplodeCar from "./components/UplodeCar";
+import Booking from "./Pages/Booking";
 
 
 
@@ -27,9 +28,9 @@ const router = createBrowserRouter([
         element: <Home />,
         loader: async () => {
 
-          const brand = await fetchHandler("/api/v1/admin/cars/brand")
-          const model = await fetchHandler("/api/v1/admin/cars/model")
-          const cars = await fetchHandler("/api/v1/admin/cars")
+          const brand = await fetchHandler("/api/v1/user/cars/brand")
+          const model = await fetchHandler("/api/v1/user/cars/model")
+          const cars = await fetchHandler("/api/v1/user/cars")
 
           return { brand, model, cars }
 
@@ -53,15 +54,19 @@ const router = createBrowserRouter([
               const brand = await fetchHandler("/api/v1/admin/cars/brand")
               const model = await fetchHandler("/api/v1/admin/cars/model")
               const cars = await fetchHandler("/api/v1/admin/cars")
-              const msgs = await fetchHandler("/api/v1/admin/msg")
+              const msgs = await fetchHandler("/api/v1/admin/cars/msg")
 
-              return { brand, model, cars, msgs }
+              return { brand, model, cars ,msgs}
             }
           },
 
           {
             path: "msgs",
             element: <Msgs />,
+            loader:async ()=> {
+              const msgs = await fetchHandler("/api/v1/admin/cars/msg")
+              return msgs
+            }
            
           },
 
@@ -69,15 +74,18 @@ const router = createBrowserRouter([
             path: "brand",
             element: <UplodeBrand />,
           
+          
           },
           {
             path: "model",
             element: <UplodeModel />,
            
+           
           },
           {
             path: "addcar",
             element: <UplodeCar />,
+            
             
           },
 
@@ -94,6 +102,10 @@ const router = createBrowserRouter([
       {
         path: "/login",
         element: <Login />,
+      },
+      {
+        path: "/booking",
+        element: <Booking />,
       },
 
 

@@ -1,4 +1,6 @@
+import { Navigate } from "react-router-dom"
 import axios from "./axiosConfig"
+
 
 const BASE_URL = import.meta.env.VITE_BASE_URL
 

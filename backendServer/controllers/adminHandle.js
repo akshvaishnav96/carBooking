@@ -4,7 +4,7 @@ import { Model } from "../schema/modelSchema.js";
 import fs from "fs/promises";
 import { Car } from "../schema/carSchema.js";
 import { Msg } from "../schema/messageSchema.js";
-import {fileUplode} from "../utils/cloudnary.js"
+import { fileUplode } from "../utils/cloudnary.js"
 
 
 async function addBrandHandler(req, res) {
@@ -58,16 +58,15 @@ async function addCarHandler(req, res) {
     if (!carnumber) throw new Error("Car Number is required");
 
     // const imagesPath = images.map((item) => "/images/" + item.originalname);  // for server image adding
-    
+
     const imagesPath = await fileUplode(images[0].path);
-    console.log(imagesPath);
-    
+
     const car = await Car.create({
       brand,
       model,
       description,
       carnumber,
-      images: imagesPath ? [imagesPath.url ]: [],
+      images: imagesPath ? [imagesPath.url] : [],
     });
 
     if (!car) throw new Error("car not uploded successfully");
@@ -94,15 +93,16 @@ async function addCarHandler(req, res) {
 }
 
 async function updateCarHandler(req, res) {
+
   try {
     const id = req.params.id;
-    const { startdate, enddate,name,email,mobile,address } = req.body;
-    
+    const { startdate, enddate, name, email, mobile, address } = req.body;
 
-    if(!email) throw new Error("email is required") 
-      if(!name) throw new Error("name is required") 
-        if(!mobile) throw new Error("mobile number is required") 
-          if(!address) throw new Error("address  is required") 
+
+    if (!email) throw new Error("email is required")
+    if (!name) throw new Error("name is required")
+    if (!mobile) throw new Error("mobile number is required")
+    if (!address) throw new Error("address  is required")
     const carData = await Car.findById(id);
     carData.startdate = new Date(startdate).toDateString();
     carData.enddate = new Date(enddate).toDateString();
@@ -117,21 +117,25 @@ async function updateCarHandler(req, res) {
       brand: carData.brand,
       model: carData.model,
       carId: carData._id,
-      image:carData.images[0],
-      email,name,mobile,address
-      
+      image: carData.images[0],
+      email, name, mobile, address
     });
 
-    if(!msgResponse) throw new Error("something went wrong when add message")
+    if (!msgResponse) throw new Error("something went wrong when add message")
 
     const newData = await Car.find({});
     const msgData = await Msg.find({});
+  
+    
+    const loggedUser = await User.findById(req.user._id);
+    loggedUser.booking.push(msgResponse)
+    loggedUser.save();
     res
       .status(200)
-      .json({ msg: "successfully updated", status: true, result: {newData,msgData} });
+      .json({ msg: "successfully updated", status: true, result: { newData, msgData } });
   } catch (error) {
     console.log(error.message);
-    
+
     res.status(400).json({ msg: error.message, status: false, result: "" });
   }
 }
@@ -303,10 +307,12 @@ async function getSingleCars(req, res) {
 
 
 async function getMsgs(req, res) {
- 
-  
+
+
   try {
     const msg = await Msg.find({});
+
+
     if (!msg) {
       throw new Error("Msgs not found");
     }

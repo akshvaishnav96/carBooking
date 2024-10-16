@@ -24,11 +24,17 @@ const adminRouter = Router();
 // get routes //////////////////////////////////////
 adminRouter.route("/cars/brand").get(getAllBrands);
 adminRouter.route("/cars/model").get(getAllModels);
+adminRouter.route("/cars").get(getuplodedCars);
+
+
+
+// auth roughts
+
+
+adminRouter.route("/cars/msg").get(auth,getMsgs);
 adminRouter.route("/users").get(auth,fetchAllUsers);
 adminRouter.route("/users/:id").get(auth,fetchSingleUser);
-adminRouter.route("/cars").get(getuplodedCars);
 adminRouter.route("/cars/:id").get(auth,getSingleCars);
-adminRouter.route("/msg").get(auth,getMsgs);
 
 
 // post routes /////////////////////////////////////
@@ -43,7 +49,7 @@ adminRouter
 adminRouter.route("/cars/:id").delete(auth,deleteCarHandler)
 adminRouter.route("/cars/model/:id").delete(auth,deleteModelHandler)
 adminRouter.route("/cars/brand/:id").delete(auth,deleteBrandHandler)
-adminRouter.route("/msg/:id").delete(auth,deleteMsgsHandler)
+adminRouter.route("/cars/msg/:id").delete(auth,deleteMsgsHandler)
 
 ///////////////////////////////////////////////////////
 adminRouter.route("/cars/:id").patch(auth,updateCarHandler)

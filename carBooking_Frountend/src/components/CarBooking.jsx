@@ -30,7 +30,7 @@ export default function CarBooking({ item }) {
         address: addressVal,
       };
       const response = await fetchHandler(
-        `/api/v1/admin/cars/${item._id}`,
+        `/api/v1/user/cars/${item._id}`,
         "patch",
         formData
       );

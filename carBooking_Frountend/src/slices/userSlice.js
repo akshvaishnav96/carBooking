@@ -6,7 +6,8 @@ const initialState={
     email:"",
     mobile:"",
     password:"",
-    loggedUser:[]
+    loggedUser:[],
+    userBookings:[]
 }
 
 const userSlice = createSlice({
@@ -24,9 +25,12 @@ const userSlice = createSlice({
           },
           setLoggedUser :function(state,action) {
             state.loggedUser = action.payload
+          },
+          setUserBookings : function(state,action){
+            state.userBookings  = action.payload
           }
     }
 })
 
-export const {inputHandler,clearInputs,setLoggedUser} = userSlice.actions  
+export const {inputHandler,clearInputs,setLoggedUser,setUserBookings} = userSlice.actions  
 export default userSlice.reducer;

@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from "react";
-import UplodeBrand from "../components/UplodeBrand";
-import { Link, useLoaderData } from "react-router-dom";
+import {  useLoaderData } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import HashLoader from "react-spinners/HashLoader";
 import { setBrand, setCars, setModel, setMsgData } from "../slices/carSlice";
 import Card from "../components/Card";
-import UplodeCar from "../components/UplodeCar";
-import UplodeModel from "../components/UplodeModel";
-import MsgComponent from "../components/MsgComponent"
+
 export default function Admin() {
   const dispatch = useDispatch();
   const data = useLoaderData();
@@ -23,9 +20,14 @@ export default function Admin() {
     if (data) {
       setLoading(false);
     }
-  }, [data]);
+
+  
+
+
+  }, []);
 
   useEffect(() => {
+    
     dispatch(setCars(data.cars.data.result));
     dispatch(setModel(data.model.data.result));
     dispatch(setBrand(data.brand.data.result));
