@@ -55,10 +55,9 @@ const FilterComponent = ({ model, cars, brand }) => {
         setResetButtonDisbled(false)
 
       }
-      
-      
     }
     fetchData();
+    dispatch(setSearchQuery(""))
   }, [searchQuery]);
 
 
