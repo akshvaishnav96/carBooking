@@ -12,7 +12,9 @@ async function addBrandHandler(req, res) {
     const { brand } = req.body;
     if (!brand) throw new Error("Brand is required");
 
-    const alreadyExist = await Brand.findOne({ brand });
+    let lowerCaseBrand = brand.toLowerCase();
+
+    const alreadyExist = await Brand.findOne({ brand:lowerCaseBrand });
     if (alreadyExist) throw new Error("brand already exist");
 
     const result = await Brand.create({ brand });
@@ -32,7 +34,10 @@ async function addModelhandler(req, res) {
     if (!brand) throw new Error("Brand is required");
     if (!model) throw new Error("Model is required");
 
-    const alreadyExist = await Model.findOne({ $and: [{ brand }, { model }] });
+    const lowerCaseModel =  model.toLowerCase()
+    const lowerCaseBrand =  brand.toLowerCase()
+
+    const alreadyExist = await Model.findOne({ $and: [{ brand:lowerCaseBrand }, { model:lowerCaseModel }] });
     if (alreadyExist) throw new Error("model already exist with this Brand");
     const result = await Model.create({ brand, model });
     // const newData = await Model.find({});
@@ -74,15 +79,14 @@ async function addCarHandler(req, res) {
     if (!description) throw new Error("Car description is required");
     if (!carnumber) throw new Error("Car Number is required");
 
-    // const imagesPath = images.map((item) => "/images/" + item.originalname);  // for server image adding
-
+const lowerCaseCarNumber = carnumber.toLowerCase()
     const imagesPath = await fileUplode(images[0].path);
 
     const car = await Car.create({
       brand,
       model,
       description,
-      carnumber,
+      carnumber:lowerCaseCarNumber,
       images: imagesPath ? [imagesPath.url] : [],
     });
 
@@ -94,7 +98,6 @@ async function addCarHandler(req, res) {
       result: updatedData,
     });
   } catch (error) {
-    console.log(error.message);
 
     await Promise.all(
       req.files["images"].map(async (item) => {
@@ -214,7 +217,6 @@ async function updateCarHandler(req, res) {
       result: { newData, msgData },
     });
   } catch (error) {
-    console.log(error.message);
 
     res.status(400).json({ msg: error.message, status: false, result: "" });
   }
@@ -471,7 +473,6 @@ async function getuplodedCars(req, res) {
       ]);
     }
 
-    console.log(result);
 
     res.status(200).json({ msg: "success", status: true, result });
   } catch (error) {
@@ -547,7 +548,51 @@ async function deleteMsgsHandler(req, res) {
 
     if (!msgData) throw new Error("nothing to delete something went wrong");
 
-    const newData = await Msg.find({});
+    const newData = await Msg.aggregate([
+      {
+        $lookup: {
+          from: "cars",
+          localField: "carDetails",
+          foreignField: "_id",
+          as: "carDetails",
+        pipeline:[
+          {
+            $lookup: {
+              from: "brands",
+              localField: "brand",
+              foreignField: "_id",
+              as: "brand",
+            },
+          },
+          {
+            $lookup: {
+              from: "models",
+              localField: "model",
+              foreignField: "_id",
+              as: "model",
+            },
+          },
+          {
+            $addFields: {
+              model:{
+                $first: "$model",
+              },
+              brand:{
+                $first:"$brand"
+              }
+            },
+          },
+        ]
+        }
+      },
+      {
+        $addFields: {
+          carDetails: {
+            $first: "$carDetails",
+          },
+        },
+      },
+    ])
 
     res
       .status(200)
@@ -579,32 +624,35 @@ async function getMsgs(req, res) {
           localField: "carDetails",
           foreignField: "_id",
           as: "carDetails",
-          pipeline:[
-            {
-              $lookup: {
-                from: "brands",
-                localField: "brand",
-                foreignField: "_id",
-                as: "brand",
-              },
+        pipeline:[
+          {
+            $lookup: {
+              from: "brands",
+              localField: "brand",
+              foreignField: "_id",
+              as: "brand",
             },
-            {
-              $lookup: {
-                from: "models",
-                localField: "model",
-                foreignField: "_id",
-                as: "model",
-              },
+          },
+          {
+            $lookup: {
+              from: "models",
+              localField: "model",
+              foreignField: "_id",
+              as: "model",
             },
-      
-            {
-              $addFields: {
-                brand: { $first: "$brand" },
-                model: { $first: "$model" },
+          },
+          {
+            $addFields: {
+              model:{
+                $first: "$model",
               },
+              brand:{
+                $first:"$brand"
+              }
             },
-          ]
-        },
+          },
+        ]
+        }
       },
       {
         $addFields: {

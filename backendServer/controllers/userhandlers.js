@@ -1,6 +1,7 @@
 import { User } from "../schema/userSchema.js";
 import jwt from "jsonwebtoken";
 import {Msg} from "../schema/messageSchema.js"
+import {Car} from "../schema/carSchema.js"
 
 const generateAccessTokenAndRefreshToken = async function (userID) {
   try {
@@ -175,7 +176,34 @@ async function getAllUserBookings(req, res) {
                 from: "cars",
                 localField: "carDetails",
                 foreignField: "_id",
-                as: "carDetails",
+                as: "carDetails",pipeline:[
+                  {
+                    $lookup: {
+                      from: "brands",
+                      localField: "brand",
+                      foreignField: "_id",
+                      as: "brand",
+                    },
+                  },
+                  {
+                    $lookup: {
+                      from: "models",
+                      localField: "model",
+                      foreignField: "_id",
+                      as: "model",
+                    },
+                  },
+                  {
+                    $addFields: {
+                      model:{
+                        $first: "$model",
+                      },
+                      brand:{
+                        $first:"$brand"
+                      }
+                    },
+                  },
+                ]
               },
             },
             {
@@ -211,12 +239,74 @@ async function cancelBooking(req,res){
           const id = req.params.id;
 
           const msgData = await Msg.findByIdAndUpdate(id,{bookingStatus:"cancelled"},{new:true})
+          
+          const carData = await Car.findByIdAndUpdate(msgData.carDetails,{booked:false,startdate:undefined,enddate:undefined})
+          const newData = await User.aggregate([
+            {
+              $match: {
+                _id: req.user._id
+              },
+            }, {
+              $lookup: {
+                from: "msgs",
+                localField: "booking",
+                foreignField: "_id",
+                as: "userBookings",
+                pipeline:[
+                  {
+                    $lookup: {
+                      from: "cars",
+                      localField: "carDetails",
+                      foreignField: "_id",
+                      as: "carDetails",pipeline:[
+                        {
+                          $lookup: {
+                            from: "brands",
+                            localField: "brand",
+                            foreignField: "_id",
+                            as: "brand",
+                          },
+                        },
+                        {
+                          $lookup: {
+                            from: "models",
+                            localField: "model",
+                            foreignField: "_id",
+                            as: "model",
+                          },
+                        },
+                        {
+                          $addFields: {
+                            model:{
+                              $first: "$model",
+                            },
+                            brand:{
+                              $first:"$brand"
+                            }
+                          },
+                        },
+                      ]
+                    },
+                  },
+                  {
+                    $addFields: {
+                      carDetails:{
+                        $first: "$carDetails",
+                      }
+                    },
+                  },
+                ]
+              }
+            }
+          ])
 
-          res.status(201).json({msg:"successfully cancelled",status:false,result:""})
+
+          res.status(201).json({msg:"successfully cancelled",status:false,result:newData})
 
           
       } catch (error) {
-        console.log(error);
+        res.status(400).json({msg:error.message,status:false,result:[]})
+
         
       }
     

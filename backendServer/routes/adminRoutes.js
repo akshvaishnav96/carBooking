@@ -22,9 +22,9 @@ import { upload } from "../middlewares/multer.js";
 const adminRouter = Router();
 
 // get routes //////////////////////////////////////
-adminRouter.route("/cars/brand").get(getAllBrands);
-adminRouter.route("/cars/model").get(getAllModels);
-adminRouter.route("/cars").get(getuplodedCars);
+adminRouter.route("/cars/brand").get(auth,getAllBrands);
+adminRouter.route("/cars/model").get(auth,getAllModels);
+adminRouter.route("/cars").get(auth,getuplodedCars);
 
 
 
@@ -38,7 +38,7 @@ adminRouter.route("/cars/:id").get(auth,getSingleCars);
 
 
 // post routes /////////////////////////////////////
-adminRouter.route("/cars/brand").post(auth,addBrandHandler);
+adminRouter.route("/cars/brand").post(addBrandHandler);
 adminRouter.route("/cars/model").post(auth,addModelhandler);
 
 adminRouter
