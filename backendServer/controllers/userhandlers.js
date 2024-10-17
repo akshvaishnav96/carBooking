@@ -168,7 +168,24 @@ async function getAllUserBookings(req, res) {
           from: "msgs",
           localField: "booking",
           foreignField: "_id",
-          as: "userBookings"
+          as: "userBookings",
+          pipeline:[
+            {
+              $lookup: {
+                from: "cars",
+                localField: "carDetails",
+                foreignField: "_id",
+                as: "carDetails",
+              },
+            },
+            {
+              $addFields: {
+                carDetails:{
+                  $first: "$carDetails",
+                }
+              },
+            },
+          ]
         }
       }
     ])
@@ -189,13 +206,11 @@ async function getAllUserBookings(req, res) {
 async function cancelBooking(req,res){
 
 
-console.log("asd");
 
       try {
           const id = req.params.id;
 
           const msgData = await Msg.findByIdAndUpdate(id,{bookingStatus:"cancelled"},{new:true})
-console.log(msgData);
 
           res.status(201).json({msg:"successfully cancelled",status:false,result:""})
 

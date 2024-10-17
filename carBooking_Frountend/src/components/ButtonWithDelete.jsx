@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 
 
 export default function ButtonWithDelete({item,deletePath}) {
+  
 
     const dispatch = useDispatch();
     async function deleteHandler(id) {
@@ -28,7 +29,7 @@ export default function ButtonWithDelete({item,deletePath}) {
       }
   return (
     <div class="flex items-center justify-between border-b">
-            <div class="p-3 text-gray-700 text-l font-bold">Brand : {item.brand.toUpperCase()}
+            <div class="p-3 text-gray-700 text-l font-bold">Brand : {deletePath === "brand" ? item?.brand?.toUpperCase():item?.brand?.brand?.toUpperCase()}
 
             {item.model &&<div class=" text-gray-700 text-sm font-bold">Model : {item.model.toUpperCase()}</div>}
             

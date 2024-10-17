@@ -19,10 +19,6 @@ const FilterComponent = ({ model, cars, brand }) => {
     (state) => state.cars
   );
   const dispatch = useDispatch();
-  // const params = new URLSearchParams(location.search);
-  // const urlModel = params.get("model");
-  // const urlBrand = params.get("brand");
-
   function handleSubmit(e) {
     e.preventDefault();
     let url = "";
@@ -46,6 +42,7 @@ const FilterComponent = ({ model, cars, brand }) => {
     async function fetchData() {
       let query = searchQuery ? searchQuery : "";
       const data = await fetchHandler(query,"get");
+      
     
 
       if(data.data.result){
@@ -55,10 +52,9 @@ const FilterComponent = ({ model, cars, brand }) => {
         setResetButtonDisbled(false)
 
       }
-      
-      
     }
     fetchData();
+    dispatch(setSearchQuery(""))
   }, [searchQuery]);
 
 
@@ -69,6 +65,8 @@ const FilterComponent = ({ model, cars, brand }) => {
         `/api/v1/admin/cars/model?brand=${e.target.value}`,
         "get"
       );
+
+      
       dispatch(setModel(response.data.result));
     } catch (error) {
       console.log(error.message);
@@ -121,7 +119,7 @@ const FilterComponent = ({ model, cars, brand }) => {
           >
             <option value="">Car Brand's</option>
             {brand?.map((item) => (
-              <option value={item.brand}>{item.brand}</option>
+              <option value={item._id}>{item.brand}</option>
             ))}
           </select>
         </div>
@@ -134,7 +132,7 @@ const FilterComponent = ({ model, cars, brand }) => {
           >
             <option value="">Select Car Model</option>
             {model?.map((item) => (
-              <option value={item.model}>{item.model}</option>
+              <option value={item._id}>{item.model}</option>
             ))}
           </select>
         </div>

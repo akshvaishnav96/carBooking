@@ -9,7 +9,6 @@ async function auth(req, res, next) {
             if (!verifyToken) {
                 return res.status(401).json({ status: false, msg: 'Not Allowed to access resouces', result: "" });
             }
-            console.log(req.baseUrl);
             
             if (verifyToken.role === "admin" && !req.baseUrl == "/api/v1/admin") {
                 console.log("not allowed");  

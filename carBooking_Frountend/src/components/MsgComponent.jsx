@@ -9,6 +9,8 @@ import { useDispatch } from "react-redux"
 
 export default function MsgComponent({ item, type = "admin" }) {
 
+console.log(item);
+
   const dispatch = useDispatch();
 
   async function updateBooking(id) {
@@ -32,10 +34,10 @@ export default function MsgComponent({ item, type = "admin" }) {
       <div class={` border border-gray-200  bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between ${item.bookingStatus === "cancelled" ? "opacity-[0.3] bg-gray-200":""}`}>
         <div class="mb-8">
           <p class="text-sm text-gray-600 flex items-center">
-            Brand : {item.brand}
+            Brand : {item.brand.brand}
           </p>
           <div class="text-gray-900 font-bold text-xl mb-2">
-            Model : {item.model}
+            Model : {item.model.model}
           </div>
 
 

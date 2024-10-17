@@ -50,6 +50,7 @@ async function handleSubmit(e){
 
   return (
     <div>
+ 
     <form
    onSubmit={handleSubmit}
    className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8"
@@ -91,7 +92,7 @@ async function handleSubmit(e){
           >
             <option value="">Select Brand</option>
             {brand?.map((item) => (
-              <option value={item.brand}>{item.brand}</option>
+              <option value={item._id}>{item.brand}</option>
             ))}
           </select>
          {error?.brand && <p className='text-red-500'>{error.brand}</p>}

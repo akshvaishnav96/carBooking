@@ -1,17 +1,17 @@
 import mongoose from "mongoose";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
+
 
 const carSchema = new mongoose.Schema({
   brand: {
-    type: String,
-    required: true,
-    trim: true,
-    maxlength: [50, "Max 50 characters allowed"],
+      type:mongoose.Types.ObjectId,
+      ref:"Brand",
+      required:true
   },
   model: {
-    type: String,
-    required: true,
-    trim: true,
-    maxlength: [50, "Max 50 characters allowed"],
+    type:mongoose.Types.ObjectId,
+    ref:"Model",
+    required:true
   },
   carnumber: {
     type: String,
@@ -44,4 +44,6 @@ const carSchema = new mongoose.Schema({
   }
 });
 
+
+carSchema.plugin(mongooseAggregatePaginate)
 export const Car = mongoose.model("Car", carSchema);
