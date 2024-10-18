@@ -3,9 +3,9 @@ import request from "supertest";
 import { app } from "./index";
 import { Brand } from "./schema/brandsSchema";
 
-afterAll(async () => {
-  await Brand.deleteMany();
-});
+// afterAll(async () => {
+//   await Brand.deleteMany();
+// });
 describe("addBrand", () => {
   it("should return brands updated one - addBrandHandler", async () => {
     const response = await request(app)
@@ -247,11 +247,11 @@ describe("addCar", () => {
               .field("model", "modelA")
               .field("description", "A great car")
               .field("carnumber", "ABC123")
-              .attach("images", "invalid/path/to/image.jpg"); // Invalid path to trigger error
+              .attach("images", "invalid/path/to/image.jpg");
   
           expect(response.status).toBe(400);
           expect(response.body.status).toBe(false);
-          expect(response.body.msg).toBeDefined(); // Check if the error message is appropriate
+          expect(response.body.msg).toBeDefined(); 
       });
   
   });

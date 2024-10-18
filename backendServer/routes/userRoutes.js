@@ -23,7 +23,7 @@ userRouter.route("/logout").post(auth,logoutHandler);
 userRouter.route("/rentCar").post(uplodeRentCarhandler);
 userRouter.route("/logincheck").get(auth,loginCheck)
 userRouter.route("/cars/:id").patch(auth,updateCarHandler)
-userRouter.route("/cars/:id").delete(auth,cancelBooking)
+userRouter.route("/booking/:id").patch(auth,cancelBooking)
 
 
 

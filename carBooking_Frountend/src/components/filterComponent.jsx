@@ -34,7 +34,7 @@ const FilterComponent = ({ model, cars, brand }) => {
       url = "";
     }
 
-    dispatch(setSearchQuery("/api/v1/admin/cars"+url))
+    dispatch(setSearchQuery("/api/v1/user/cars"+url))
     
   }
 
@@ -45,10 +45,10 @@ const FilterComponent = ({ model, cars, brand }) => {
       
     
 
-      if(data.data.result){
+      if(data?.data?.result){
         toast.success("car filter successfully")
 
-        dispatch(setCars(data.data.result))
+        dispatch(setCars(data?.data?.result))
         setResetButtonDisbled(false)
 
       }
@@ -62,7 +62,7 @@ const FilterComponent = ({ model, cars, brand }) => {
     try {
       dispatch(setSelectedBrand(e.target.value));
       const response = await fetchHandler(
-        `/api/v1/admin/cars/model?brand=${e.target.value}`,
+        `/api/v1/user/cars/model?brand=${e.target.value}`,
         "get"
       );
 
@@ -77,15 +77,15 @@ const FilterComponent = ({ model, cars, brand }) => {
     setResetButtonDisbled(true)
     try {
       const responseModel = await fetchHandler(
-        `/api/v1/admin/cars/model`,
+        `/api/v1/user/cars/model`,
         "get"
       );
        const responseBrand = await fetchHandler(
-        `/api/v1/admin/cars/brand`,
+        `/api/v1/user/cars/brand`,
         "get"
       );
       const carsDataResponse = await fetchHandler(
-        `/api/v1/admin/cars`,
+        `/api/v1/user/cars`,
         "get"
       );
 

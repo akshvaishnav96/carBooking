@@ -17,7 +17,7 @@ console.log(item);
 
     try {
 
-      let url = type === "user" ? `/api/v1/user/cars/${id}` : `/api/v1/admin/cars/msg/${id}`
+      let url =`/api/v1/admin/cars/msg/${id}`
       const response = await fetchHandler(url, "delete");
       dispatch(setMsgData(response.data.result));
       toast.success("successfully deleted")
@@ -34,19 +34,19 @@ console.log(item);
       <div class={` border border-gray-200  bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between ${item.bookingStatus === "cancelled" ? "opacity-[0.3] bg-gray-200":""}`}>
         <div class="mb-8">
           <p class="text-sm text-gray-600 flex items-center">
-            Brand : {item.brand.brand}
+            Brand : {item.carDetails.brand.brand}
           </p>
           <div class="text-gray-900 font-bold text-xl mb-2">
-            Model : {item.model.model}
+            Model : {item.carDetails.model.model}
           </div>
 
 
-          <p class="text-gray-700  text-2xl">{item.carnumber.toUpperCase()}</p>
+          <p class="text-gray-700  text-2xl">{item.carDetails.carnumber.toUpperCase()}</p>
         </div>
         <div class="flex items-center relative">
           <img
             class="w-25 h-25 rounded-full mr-4"
-            src={`${item.image}`}
+            src={`${item.carDetails.image}`}
             alt="Avatar of Jonathan Reinink"
           />
           {item.bookingStatus === "cancelled" &&<div className="Cancelled bg-red-500 py-5 px-10 rotate-[-35deg] text-white text-center text-3xl w-[25rem] absolute opacity-[0.7] rounded-l left-0">Cancelled</div>}
