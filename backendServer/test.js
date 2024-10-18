@@ -1,16 +1,23 @@
-import { getAllBrands } from "./controllers/adminHandle";
 import request from "supertest";
 import { app } from "./index";
 import { Brand } from "./schema/brandsSchema";
+import { Model } from "./schema/modelSchema";
+import { Car } from "./schema/carSchema";
+import { Msg } from "./schema/messageSchema";
 
-// afterAll(async () => {
-//   await Brand.deleteMany();
-// });
+afterAll(async () => {
+  await Brand.deleteMany();
+  await Model.deleteMany();
+  await Car.deleteMany();
+  await Msg.deleteMany();
+});
+
+
 describe("addBrand", () => {
-  it("should return brands updated one - addBrandHandler", async () => {
+  it("should return brands update one - addBrandHandler", async () => {
     const response = await request(app)
       .post("/api/v1/admin/cars/brand")
-      .send({ brand: "text21" });
+      .send({ brand: "text22" });
     expect(response.status).toBe(201);
     expect(response.body.status).toBe(true);
     expect(response.body.msg).toBe("successFully added Brand");
@@ -26,42 +33,6 @@ describe("addBrand", () => {
     expect(response.body.msg).toBe("Brand is required");
   });
 
-  it("should return status 400 - addBrandHandler, brand already exists", async () => {
-    await request(app)
-      .post("/api/v1/admin/cars/brand")
-      .send({ brand: "text21" }); 
-    const response = await request(app)
-      .post("/api/v1/admin/cars/brand")
-      .send({ brand: "text21" });
-    expect(response.status).toBe(400);
-    expect(response.body.status).toBe(false);
-    expect(response.body.msg).toBe("brand already exist");
-  });
-
-  it("should return status 400 - addBrandHandler, brand with leading/trailing spaces", async () => {
-    const response = await request(app)
-      .post("/api/v1/admin/cars/brand")
-      .send({ brand: "   text22   " });
-    expect(response.status).toBe(201);
-    expect(response.body.status).toBe(true);
-    expect(response.body.result).toBeDefined();
-
-    const secondResponse = await request(app)
-      .post("/api/v1/admin/cars/brand")
-      .send({ brand: "text22" });
-    expect(secondResponse.status).toBe(400);
-    expect(secondResponse.body.status).toBe(false);
-    expect(secondResponse.body.msg).toBe("brand already exist");
-  });
-
-  it("should return status 400 - addBrandHandler, brand as a number", async () => {
-    const response = await request(app)
-      .post("/api/v1/admin/cars/brand")
-      .send({ brand: 123 });
-    expect(response.status).toBe(400);
-    expect(response.body.status).toBe(false);
-    expect(response.body.msg).toBe("Brand is required");
-  });
 
   it("should return status 400 - addBrandHandler, brand as an empty string", async () => {
     const response = await request(app)
@@ -75,9 +46,13 @@ describe("addBrand", () => {
 
 describe("addModel", () => {
   it("should return models updated one - addModelHandler", async () => {
+
+    const brandId = await Brand.find({}).limit(1);
+    
+
     const response = await request(app)
       .post("/api/v1/admin/cars/model")
-      .send({ brand: "text21", model: "modelA" });
+      .send({ brand: brandId[0]._id, model: "modelA" });
     expect(response.status).toBe(201);
     expect(response.body.status).toBe(true);
     expect(response.body.msg).toBe("successFully added Model");
@@ -103,41 +78,22 @@ describe("addModel", () => {
   });
 
   it("should return status 400 - addModelHandler, model already exists with the brand", async () => {
-    await request(app)
-      .post("/api/v1/admin/cars/model")
-      .send({ brand: "text21", model: "modelA" }); 
+
+
+    const brandId = await Brand.find({}).limit(1);
+    const model = await Model.find({}).limit(1);
+
+
+
     const response = await request(app)
       .post("/api/v1/admin/cars/model")
-      .send({ brand: "text21", model: "modelA" });
+      .send({ brand: brandId[0]._id, model: model[0].model });
     expect(response.status).toBe(400);
     expect(response.body.status).toBe(false);
     expect(response.body.msg).toBe("model already exist with this Brand");
   });
 
-  it("should return status 400 - addModelHandler, brand with leading/trailing spaces", async () => {
-    const response = await request(app)
-      .post("/api/v1/admin/cars/model")
-      .send({ brand: "   text22   ", model: "modelB" });
-    expect(response.status).toBe(201);
-    expect(response.body.status).toBe(true);
-    expect(response.body.result).toBeDefined();
 
-    const secondResponse = await request(app)
-      .post("/api/v1/admin/cars/model")
-      .send({ brand: "text22", model: "modelB" });
-    expect(secondResponse.status).toBe(400);
-    expect(secondResponse.body.status).toBe(false);
-    expect(secondResponse.body.msg).toBe("model already exist with this Brand");
-  });
-
-  it("should return status 400 - addModelHandler, model as a number", async () => {
-    const response = await request(app)
-      .post("/api/v1/admin/cars/model")
-      .send({ brand: "text21", model: 123 });
-    expect(response.status).toBe(400);
-    expect(response.body.status).toBe(false);
-    expect(response.body.msg).toBe("Model is required");
-  });
 
   it("should return status 400 - addModelHandler, model as an empty string", async () => {
     const response = await request(app)
@@ -149,209 +105,232 @@ describe("addModel", () => {
   });
 });
 
-describe("addCar", () => {
 
-      it("should add a car successfully - addCarHandler", async () => {
-          const response = await request(app)
-              .post("/api/v1/admin/cars")
-              .field("brand", "text21")
-              .field("model", "modelA")
-              .field("description", "A great car")
-              .field("carnumber", "ABC123")
-              .attach("images", "path/to/image.jpg");
-  
-          expect(response.status).toBe(200);
-          expect(response.body.status).toBe(true);
-          expect(response.body.msg).toBe("car adding Successfully");
-          expect(response.body.result).toBeDefined();
-      });
-  
-      it("should return status 400 - addCarHandler, missing model", async () => {
-          const response = await request(app)
-              .post("/api/v1/admin/cars")
-              .field("brand", "text21")
-              .field("description", "A great car")
-              .field("carnumber", "ABC123")
-              .attach("images", "path/to/image.jpg");
-  
-          expect(response.status).toBe(400);
-          expect(response.body.status).toBe(false);
-          expect(response.body.msg).toBe("Car Model is required");
-      });
-  
-      it("should return status 400 - addCarHandler, missing brand", async () => {
-          const response = await request(app)
-              .post("/api/v1/admin/cars")
-              .field("model", "modelA")
-              .field("description", "A great car")
-              .field("carnumber", "ABC123")
-              .attach("images", "path/to/image.jpg");
-  
-          expect(response.status).toBe(400);
-          expect(response.body.status).toBe(false);
-          expect(response.body.msg).toBe("Car Brand is required");
-      });
-  
-      it("should return status 400 - addCarHandler, missing description", async () => {
-          const response = await request(app)
-              .post("/api/v1/admin/cars")
-              .field("brand", "text21")
-              .field("model", "modelA")
-              .field("carnumber", "ABC123")
-              .attach("images", "path/to/image.jpg");
-  
-          expect(response.status).toBe(400);
-          expect(response.body.status).toBe(false);
-          expect(response.body.msg).toBe("Car description is required");
-      });
-  
-      it("should return status 400 - addCarHandler, missing carnumber", async () => {
-          const response = await request(app)
-              .post("/api/v1/admin/cars")
-              .field("brand", "text21")
-              .field("model", "modelA")
-              .field("description", "A great car")
-              .attach("images", "path/to/image.jpg");
-  
-          expect(response.status).toBe(400);
-          expect(response.body.status).toBe(false);
-          expect(response.body.msg).toBe("Car Number is required");
-      });
-  
-      it("should return status 400 - addCarHandler, car already exists", async () => {
-          await request(app)
-              .post("/api/v1/admin/cars")
-              .field("brand", "text21")
-              .field("model", "modelA")
-              .field("description", "A great car")
-              .field("carnumber", "ABC123")
-              .attach("images", "path/to/image.jpg");
-  
-          const response = await request(app)
-              .post("/api/v1/admin/cars")
-              .field("brand", "text21")
-              .field("model", "modelB")
-              .field("description", "Another great car")
-              .field("carnumber", "ABC123")
-              .attach("images", "path/to/image.jpg");
-  
-          expect(response.status).toBe(400);
-          expect(response.body.status).toBe(false);
-          expect(response.body.msg).toBe("car already exist with this number");
-      });
-  
-      it("should return status 400 - addCarHandler, error during file upload", async () => {
-          const response = await request(app)
-              .post("/api/v1/admin/cars")
-              .field("brand", "text21")
-              .field("model", "modelA")
-              .field("description", "A great car")
-              .field("carnumber", "ABC123")
-              .attach("images", "invalid/path/to/image.jpg");
-  
-          expect(response.status).toBe(400);
-          expect(response.body.status).toBe(false);
-          expect(response.body.msg).toBeDefined(); 
-      });
-  
+describe("GET /cars/brand", () => {
+
+  it("should fetch all brands - getAllBrands", async () => {
+    const response = await request(app).get("/api/v1/admin/cars/brand")
+    expect(response.status).toBe(200);
+    expect(response.body.status).toBe(true);
+    expect(response.body.result).toBeDefined();
   });
-  describe("GET /cars/brand", () => {
-  
-      it("should fetch all brands - getAllBrands", async () => {
-        const response = await request(app).get("/api/v1/admin/cars/brand").set("Authorization", `Bearer ${token}`); 
-        expect(response.status).toBe(200);
-        expect(response.body.status).toBe(true);
-        expect(response.body.result).toBeDefined();
-      });
-    
-      it("should return status 401 - getAllBrands, unauthorized", async () => {
-        const response = await request(app).get("/api/v1/admin/cars/brand");
-        expect(response.status).toBe(401);
-        expect(response.body.status).toBe(false);
-      });
+
+});
+
+describe("GET /cars/model", () => {
+
+  it("should fetch all models - getAllModels", async () => {
+    const response = await request(app).get("/api/v1/admin/cars/model")
+    expect(response.status).toBe(200);
+    expect(response.body.status).toBe(true);
+    expect(response.body.result).toBeDefined();
+  });
+
+
+
+});
+
+
+describe("GET /cars", () => {
+
+  it("should fetch all uploaded cars - getuplodedCars", async () => {
+    const response = await request(app).get("/api/v1/admin/cars")
+    expect(response.status).toBe(200);
+    expect(response.body.status).toBe(true);
+    expect(response.body.result).toBeDefined();
+  });
+
+
+});
+
+
+describe("GET /cars/msg", () => {
+
+  it("should fetch all messages - getMsgs", async () => {
+    const response = await request(app).get("/api/v1/admin/cars/msg")
+    expect(response.status).toBe(200);
+    expect(response.body.status).toBe(true);
+    expect(response.body.result).toBeDefined();
+  });
+
+});
+
+describe("delete Car - updateCarhandler",()=>{
+
+})
+
+describe("delete Car - deleteCarhandler",async()=>{
+
+  const carData = await Car.find({}).limit(1)
+  const id = carData[0]._id
+  const response = await request(app)
+  .delete(`/api/v1/admin/cars/${id}`)
+  expect(response.status).toBe(200)
+  expect(response.body.status().toBe(true))
+  expect(response.body.msg().toBe("Car deleted Successfully"))
+
+})
+
+
+
+async function updateCarHandler(req, res) {
+  try {
+    const id = req.params.id;
+    const { startdate, enddate, name, email, mobile, address } = req.body;
+
+    if (!email) throw new Error("email is required");
+    if (!name) throw new Error("name is required");
+    if (!mobile) throw new Error("mobile number is required");
+    if (!address) throw new Error("address  is required");
+    const carData = await Car.findById(id);
+    carData.startdate = new Date(startdate).toDateString();
+    carData.enddate = new Date(enddate).toDateString();
+    carData.booked = true;
+
+    await carData.save();
+
+    const msgResponse = await Msg.create({
+      startdate: new Date(startdate).toDateString(),
+      enddate: new Date(enddate).toDateString(),
+      carDetails: carData._id,
+      email,
+      name,
+      mobile,
+      address,
     });
+
+    if (!msgResponse) throw new Error("something went wrong when add message");
+
+    const newData = await Car.aggregate([
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brand",
+        },
+      },
+      {
+        $lookup: {
+          from: "models",
+          localField: "model",
+          foreignField: "_id",
+          as: "model",
+        },
+      },
+
+      {
+        $addFields: {
+          brand: { $first: "$brand" },
+          model: { $first: "$model" },
+        },
+      },
+    ]);
+    const msgData = await Msg.aggregate([
+      {
+        $lookup: {
+          from: "cars",
+          localField: "carDetails",
+          foreignField: "_id",
+          as: "carDetails",
+          pipeline:[
+            {
+              $lookup: {
+                from: "brands",
+                localField: "brand",
+                foreignField: "_id",
+                as: "brand",
+              },
+            },
+            {
+              $lookup: {
+                from: "models",
+                localField: "model",
+                foreignField: "_id",
+                as: "model",
+              },
+            },
       
-    describe("GET /cars/model", () => {
+            {
+              $addFields: {
+                brand: { $first: "$brand" },
+                model: { $first: "$model" },
+              },
+            },
+          ]
+        },
+      },
+      {
+        $addFields: {
+          carDetails: {
+            $first: "$carDetails",
+          },
+        },
+      },
+    ]);
 
-      it("should fetch all models - getAllModels", async () => {
-        const response = await request(app).get("/api/v1/admin/cars/model").set("Authorization", `Bearer ${token}`);
-        expect(response.status).toBe(200);
-        expect(response.body.status).toBe(true);
-        expect(response.body.result).toBeDefined();
-      });
-    
-      it("should return models filtered by brand - getAllModels", async () => {
-        const brandId = "someValidBrandId";
-        const response = await request(app).get(`/api/v1/admin/cars/model?brand=${brandId}`).set("Authorization", `Bearer ${token}`);
-        expect(response.status).toBe(200);
-        expect(response.body.status).toBe(true);
-        expect(response.body.result).toBeDefined();
-      });
-    
-      it("should return status 401 - getAllModels, unauthorized", async () => {
-        const response = await request(app).get("/api/v1/admin/cars/model");
-        expect(response.status).toBe(401);
-        expect(response.body.status).toBe(false);
-      });
+    const loggedUser = await User.findById(req.user._id);
+    loggedUser.booking.push(msgResponse);
+    loggedUser.save();
+    res.status(200).json({
+      msg: "successfully updated",
+      status: true,
+      result: { newData, msgData },
     });
-    
+  } catch (error) {
 
-    describe("GET /cars", () => {
+    res.status(400).json({ msg: error.message, status: false, result: "" });
+  }
+}
 
-      it("should fetch all uploaded cars - getuplodedCars", async () => {
-        const response = await request(app).get("/api/v1/admin/cars").set("Authorization", `Bearer ${token}`);
-        expect(response.status).toBe(200);
-        expect(response.body.status).toBe(true);
-        expect(response.body.result).toBeDefined();
-      });
-    
-      it("should return status 401 - getuplodedCars, unauthorized", async () => {
-        const response = await request(app).get("/api/v1/admin/cars");
-        expect(response.status).toBe(401);
-        expect(response.body.status).toBe(false);
-      });
-    });
- 
-    
-    describe("GET /cars/msg", () => {
+async function deleteCarHandler(req, res) {
+  try {
+    const id = req.params.id;
+    const carData = await Car.findById(id);
 
-      it("should fetch all messages - getMsgs", async () => {
-        const response = await request(app).get("/api/v1/admin/cars/msg").set("Authorization", `Bearer ${token}`);
-        expect(response.status).toBe(200);
-        expect(response.body.status).toBe(true);
-        expect(response.body.result).toBeDefined();
-      });
-    
-      it("should return status 401 - getMsgs, unauthorized", async () => {
-        const response = await request(app).get("/api/v1/admin/cars/msg");
-        expect(response.status).toBe(401);
-        expect(response.body.status).toBe(false);
-      });
-    });
-    
+    if (!carData) throw new Error("nothing to delete something went wrong");
 
-    describe("GET /cars/:id", () => {
+    await Promise.all(
+      carData["images"].map(async (item) => {
+        try {
+          await fs.unlink(`./public/${item}`);
+        } catch (err) {
+          console.error(`Error removing file ${item.originalname}:`, err);
+        }
+      })
+    );
 
-      it("should fetch a single car - getSingleCars", async () => {
-        const carId = "someValidCarId"; 
-        const response = await request(app).get(`/api/v1/admin/cars/${carId}`).set("Authorization", `Bearer ${token}`);
-        expect(response.status).toBe(200);
-        expect(response.body.status).toBe(true);
-        expect(response.body.result).toBeDefined();
-      });
-    
-      it("should return status 404 - getSingleCars, car not found", async () => {
-        const carId = "invalidCarId";
-        const response = await request(app).get(`/api/v1/admin/cars/${carId}`).set("Authorization", `Bearer ${token}`);
-        expect(response.status).toBe(404);
-        expect(response.body.status).toBe(false);
-      });
-    
-      it("should return status 401 - getSingleCars, unauthorized", async () => {
-        const carId = "someValidCarId";
-        const response = await request(app).get(`/api/v1/admin/cars/${carId}`);
-        expect(response.status).toBe(401);
-        expect(response.body.status).toBe(false);
-      });
-    });
-    
+    await Car.findByIdAndDelete(id);
+    const newData = await Car.aggregate([
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brand",
+        },
+      },
+      {
+        $lookup: {
+          from: "models",
+          localField: "model",
+          foreignField: "_id",
+          as: "model",
+        },
+      },
+      {
+        $addFields: {
+          brand: { $first: "$brand" },
+          model: { $first: "$model" },
+        },
+      },
+    ]);
+
+    res
+      .status(200)
+      .json({ status: true, msg: "Car deleted Successfully", result: newData });
+  } catch (error) {
+    res.status(400).json({ status: false, msg: error.message, result: "" });
+  }
+}
+

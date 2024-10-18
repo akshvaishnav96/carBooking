@@ -35,12 +35,17 @@ async function addModelhandler(req, res) {
     if (!model) throw new Error("Model is required");
 
     const lowerCaseModel =  model.toLowerCase()
-    const lowerCaseBrand =  brand.toLowerCase()
 
-    const alreadyExist = await Model.findOne({ $and: [{ brand:lowerCaseBrand }, { model:lowerCaseModel }] });
+    
+
+
+    const alreadyExist = await Model.findOne({ $and: [{ brand }, { model:lowerCaseModel }] });
+    console.log(alreadyExist);
+    
     if (alreadyExist) throw new Error("model already exist with this Brand");
     const result = await Model.create({ brand, model });
-    // const newData = await Model.find({});
+
+    
     const newData = await Model.aggregate([
       {
         $lookup: {
@@ -63,6 +68,7 @@ async function addModelhandler(req, res) {
       .status(201)
       .json({ status: true, msg: "successFully added Model", result: newData });
   } catch (error) {
+    
     res.status(400).json({ status: false, msg: error.message, result: "" });
   }
 }
