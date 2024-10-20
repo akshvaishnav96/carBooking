@@ -87,7 +87,7 @@ setloading(false);
         dispatch(setCars(data.data.result));
         dispatch(clearInputs());
         toast.success(
-          `car ${selectedBrand} ${selectedModel} ${carNumberVal} added`
+          `car ${carNumberVal} added`
         );
     setError("");
 

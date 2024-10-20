@@ -14,7 +14,7 @@ async function addBrandHandler(req, res) {
 
     let lowerCaseBrand = brand.toLowerCase();
 
-    const alreadyExist = await Brand.findOne({ brand:lowerCaseBrand });
+    const alreadyExist = await Brand.findOne({ brand: lowerCaseBrand });
     if (alreadyExist) throw new Error("brand already exist");
 
     const result = await Brand.create({ brand });
@@ -34,18 +34,16 @@ async function addModelhandler(req, res) {
     if (!brand) throw new Error("Brand is required");
     if (!model) throw new Error("Model is required");
 
-    const lowerCaseModel =  model.toLowerCase()
+    const lowerCaseModel = model.toLowerCase();
 
-    
-
-
-    const alreadyExist = await Model.findOne({ $and: [{ brand }, { model:lowerCaseModel }] });
+    const alreadyExist = await Model.findOne({
+      $and: [{ brand }, { model: lowerCaseModel }],
+    });
     console.log(alreadyExist);
-    
+
     if (alreadyExist) throw new Error("model already exist with this Brand");
     const result = await Model.create({ brand, model });
 
-    
     const newData = await Model.aggregate([
       {
         $lookup: {
@@ -68,7 +66,6 @@ async function addModelhandler(req, res) {
       .status(201)
       .json({ status: true, msg: "successFully added Model", result: newData });
   } catch (error) {
-    
     res.status(400).json({ status: false, msg: error.message, result: "" });
   }
 }
@@ -85,14 +82,14 @@ async function addCarHandler(req, res) {
     if (!description) throw new Error("Car description is required");
     if (!carnumber) throw new Error("Car Number is required");
 
-const lowerCaseCarNumber = carnumber.toLowerCase()
+    const lowerCaseCarNumber = carnumber.toLowerCase();
     const imagesPath = await fileUplode(images[0].path);
 
     const car = await Car.create({
       brand,
       model,
       description,
-      carnumber:lowerCaseCarNumber,
+      carnumber: lowerCaseCarNumber,
       images: imagesPath ? [imagesPath.url] : [],
     });
 
@@ -104,7 +101,6 @@ const lowerCaseCarNumber = carnumber.toLowerCase()
       result: updatedData,
     });
   } catch (error) {
-
     await Promise.all(
       req.files["images"].map(async (item) => {
         try {
@@ -118,7 +114,81 @@ const lowerCaseCarNumber = carnumber.toLowerCase()
   }
 }
 
-async function updateCarHandler(req, res) {
+async function updateBrandHandler(req, res) {
+  try {
+    const { brand } = req.body;
+    const { id } = req.params;
+
+    const alreadyExist = await Brand.findOne({ brand }, { _id: { $not: id } });
+    if (alreadyExist) throw new Error("brand already exist");
+
+    const updatedBrand = await Brand.findOneAndUpdate({ _id: id }, { brand });
+
+    const newData = await Brand.find({});
+
+    res
+      .status(201)
+      .json({
+        status: true,
+        msg: "successFully updated Brand",
+        result: newData,
+      });
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ status: false, msg: error.message, result: [] });
+  }
+}
+
+async function updateModelHandler(req, res) {
+  try {
+    const { model } = req.body;
+    const { id } = req.params;
+    const { brand } = req.body;
+
+    const alreadyExist = await Model.findOne({ model,brand }, { _id: { $not: id } });
+    if (alreadyExist) throw new Error("model already exist");
+
+    let updationObj;
+
+    if (model&&brand) {
+      updationObj = {model,brand}
+    }else if(model){
+      updationObj = {model}
+    }else if(brand){
+      updationObj = {brand}
+    }
+
+
+    const updatedModel = await Model.findOneAndUpdate({ _id: id }, updationObj);
+
+    const newData = await Model.aggregate([
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brand",
+        },
+      },
+      {
+        $addFields: {
+          brand: {
+            $first: "$brand",
+          },
+        },
+      },
+    ]);
+
+    res
+      .status(201)
+      .json({ status: true, msg: "successFully updated Model", result: newData });
+  } catch (error) {
+    return res.status(400).json({status:false, msg: error.message,result:[] });
+  }
+}
+
+async function updateBookingCarHandler(req, res) {
   try {
     const id = req.params.id;
     const { startdate, enddate, name, email, mobile, address } = req.body;
@@ -178,7 +248,7 @@ async function updateCarHandler(req, res) {
           localField: "carDetails",
           foreignField: "_id",
           as: "carDetails",
-          pipeline:[
+          pipeline: [
             {
               $lookup: {
                 from: "brands",
@@ -195,14 +265,14 @@ async function updateCarHandler(req, res) {
                 as: "model",
               },
             },
-      
+
             {
               $addFields: {
                 brand: { $first: "$brand" },
                 model: { $first: "$model" },
               },
             },
-          ]
+          ],
         },
       },
       {
@@ -223,7 +293,6 @@ async function updateCarHandler(req, res) {
       result: { newData, msgData },
     });
   } catch (error) {
-
     res.status(400).json({ msg: error.message, status: false, result: "" });
   }
 }
@@ -479,7 +548,6 @@ async function getuplodedCars(req, res) {
       ]);
     }
 
-
     res.status(200).json({ msg: "success", status: true, result });
   } catch (error) {
     res.status(400).json({ msg: error.message, status: false, result: "" });
@@ -561,35 +629,35 @@ async function deleteMsgsHandler(req, res) {
           localField: "carDetails",
           foreignField: "_id",
           as: "carDetails",
-        pipeline:[
-          {
-            $lookup: {
-              from: "brands",
-              localField: "brand",
-              foreignField: "_id",
-              as: "brand",
-            },
-          },
-          {
-            $lookup: {
-              from: "models",
-              localField: "model",
-              foreignField: "_id",
-              as: "model",
-            },
-          },
-          {
-            $addFields: {
-              model:{
-                $first: "$model",
+          pipeline: [
+            {
+              $lookup: {
+                from: "brands",
+                localField: "brand",
+                foreignField: "_id",
+                as: "brand",
               },
-              brand:{
-                $first:"$brand"
-              }
             },
-          },
-        ]
-        }
+            {
+              $lookup: {
+                from: "models",
+                localField: "model",
+                foreignField: "_id",
+                as: "model",
+              },
+            },
+            {
+              $addFields: {
+                model: {
+                  $first: "$model",
+                },
+                brand: {
+                  $first: "$brand",
+                },
+              },
+            },
+          ],
+        },
       },
       {
         $addFields: {
@@ -598,7 +666,7 @@ async function deleteMsgsHandler(req, res) {
           },
         },
       },
-    ])
+    ]);
 
     res
       .status(200)
@@ -630,35 +698,35 @@ async function getMsgs(req, res) {
           localField: "carDetails",
           foreignField: "_id",
           as: "carDetails",
-        pipeline:[
-          {
-            $lookup: {
-              from: "brands",
-              localField: "brand",
-              foreignField: "_id",
-              as: "brand",
-            },
-          },
-          {
-            $lookup: {
-              from: "models",
-              localField: "model",
-              foreignField: "_id",
-              as: "model",
-            },
-          },
-          {
-            $addFields: {
-              model:{
-                $first: "$model",
+          pipeline: [
+            {
+              $lookup: {
+                from: "brands",
+                localField: "brand",
+                foreignField: "_id",
+                as: "brand",
               },
-              brand:{
-                $first:"$brand"
-              }
             },
-          },
-        ]
-        }
+            {
+              $lookup: {
+                from: "models",
+                localField: "model",
+                foreignField: "_id",
+                as: "model",
+              },
+            },
+            {
+              $addFields: {
+                model: {
+                  $first: "$model",
+                },
+                brand: {
+                  $first: "$brand",
+                },
+              },
+            },
+          ],
+        },
       },
       {
         $addFields: {
@@ -667,7 +735,7 @@ async function getMsgs(req, res) {
           },
         },
       },
-    ])
+    ]);
 
     if (!msg) {
       throw new Error("Msgs not found");
@@ -689,9 +757,11 @@ export {
   fetchSingleUser,
   getSingleCars,
   deleteCarHandler,
-  updateCarHandler,
+  updateBookingCarHandler,
   getMsgs,
   deleteModelHandler,
   deleteBrandHandler,
   deleteMsgsHandler,
+  updateBrandHandler,
+  updateModelHandler,
 };

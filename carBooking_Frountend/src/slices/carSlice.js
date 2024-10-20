@@ -87,6 +87,12 @@ const carsSlice = createSlice({
     },
     setLoggedAdmin: function (state, action) {
       state.loggedAdmin = action.payload
+    },
+    setBrandInputVal: function (state, action) {
+      state.brandInputVal = action.payload
+    },
+    setModelInputVal: function (state, action) {
+      state.modelInputVal = action.payload
     }
   },
 });
@@ -103,7 +109,9 @@ export const {
   setLoading,
   setSingleCar,
   setMsgData,
-  setLoggedAdmin
+  setLoggedAdmin,
+  setBrandInputVal,
+  setModelInputVal
 } = carsSlice.actions;
 
 export default carsSlice.reducer;

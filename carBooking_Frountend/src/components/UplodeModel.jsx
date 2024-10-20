@@ -8,6 +8,8 @@ import ButtonWithDelete from "../components/ButtonWithDelete"
 export default function UplodeModel() {
   const dispatch = useDispatch()
   const [error, setError] = useState({});
+  const [isEdit, setIsEdit] = useState(false);
+  const [editId,setEditId] = useState("");
 
 
   const {brand,modelInputVal,selectedBrand,model}  = useSelector((state)=>state.cars)
@@ -33,11 +35,14 @@ async function handleSubmit(e){
 
   
  try {
-   const data = await fetchHandler("/api/v1/admin/cars/model","post",formData)
+  const data = isEdit
+  ? await fetchHandler(`/api/v1/admin/cars/model/${editId}`, "patch", formData)
+  : await fetchHandler("/api/v1/admin/cars/model", "post", formData);
+
    if (data.status < 400) {
      dispatch(setModel(data.data.result))
     dispatch(clearInputs());
-    toast.success(`${modelInputVal} added successfully`);
+    toast.success(`${modelInputVal} ${isEdit ? "updated" : "Added"} successfully`);
     setError("");
   } else {
     toast.error(data.response.data.msg);
@@ -46,7 +51,18 @@ async function handleSubmit(e){
   toast.error(error.message)
 
  }
+ setIsEdit(false)
+ setEditId("");
+ dispatch(clearInputs());
 }
+
+async function cancelHandler(){ 
+  setEditId("");
+  setIsEdit(false);
+  dispatch(clearInputs());
+}
+
+
 
   return (
     <div>
@@ -109,8 +125,14 @@ async function handleSubmit(e){
          type="submit"
          className="flex w-full justify-center rounded-md bg-slate-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
        >
-         Add
+         {isEdit ? "Update" : "Add"}
        </button>
+       {isEdit && <button onClick={cancelHandler}
+         type="button"
+         className="flex w-full my-4 justify-center rounded-md bg-slate-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
+       >
+         Cancel
+       </button>}
      </div>
 
  
@@ -119,7 +141,7 @@ async function handleSubmit(e){
  <div className=" ml-9 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8 p-4">
       {model &&
         model.map((item) => (
-            <ButtonWithDelete item={item} deletePath="model" />
+            <ButtonWithDelete item={item} deletePath="model" setIsEdit={setIsEdit} setEditId={setEditId} />
         ))}
           </div>
 </div>

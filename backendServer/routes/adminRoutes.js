@@ -96,7 +96,10 @@ import {
   getMsgs,
   getSingleCars,
   getuplodedCars,
-  updateCarHandler,
+  updateBookingCarHandler,
+  updateBrandHandler,
+  updateModelHandler
+
 } from "../controllers/adminHandle.js";
 import { auth } from "../middlewares/auth.js";
 import { upload } from "../middlewares/multer.js";
@@ -127,6 +130,14 @@ adminRouter
   .route("/cars")
   .post(upload.fields([{ name: "images", maxCount: 4 }]), addCarHandler);
 
+
+
+//////////////////////////////////////////////////////
+
+adminRouter.route("/cars/brand/:id").patch(updateBrandHandler)
+adminRouter.route("/cars/model/:id").patch(updateModelHandler)
+
+
 /////////////////////////////////////////////////////
 adminRouter.route("/cars/:id").delete(deleteCarHandler)
 adminRouter.route("/cars/model/:id").delete(deleteModelHandler)
@@ -134,6 +145,6 @@ adminRouter.route("/cars/brand/:id").delete(deleteBrandHandler)
 adminRouter.route("/cars/msg/:id").delete(deleteMsgsHandler)
 
 ///////////////////////////////////////////////////////
-adminRouter.route("/cars/:id").patch(updateCarHandler)
+adminRouter.route("/cars/:id").patch(updateBookingCarHandler)
 
 export { adminRouter };
