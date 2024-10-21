@@ -31,19 +31,23 @@ async function addModelhandler(req, res) {
   try {
     const { brand, model } = req.body;
 
+    console.log(brand,model);
+
     if (!brand) throw new Error("Brand is required");
     if (!model) throw new Error("Model is required");
 
     const lowerCaseModel = model.toLowerCase();
 
+    console.log("a",await Model.find({}));
     const alreadyExist = await Model.findOne({
-      $and: [{ brand }, { model: lowerCaseModel }],
+      $and: [{ brand }, { model:lowerCaseModel}],
     });
-    console.log(alreadyExist);
 
+  
     if (alreadyExist) throw new Error("model already exist with this Brand");
     const result = await Model.create({ brand, model });
 
+    
     const newData = await Model.aggregate([
       {
         $lookup: {
@@ -85,6 +89,7 @@ async function addCarHandler(req, res) {
     const lowerCaseCarNumber = carnumber.toLowerCase();
     const imagesPath = await fileUplode(images[0].path);
 
+
     const car = await Car.create({
       brand,
       model,
@@ -95,7 +100,7 @@ async function addCarHandler(req, res) {
 
     if (!car) throw new Error("car not uploded successfully");
     const updatedData = await Car.find({});
-    res.status(200).json({
+    res.status(201).json({
       status: true,
       msg: "car adding Successfully",
       result: updatedData,
@@ -119,6 +124,14 @@ async function updateBrandHandler(req, res) {
     const { brand } = req.body;
     const { id } = req.params;
 
+    console.log(brand,id);
+    
+
+    if(!brand) throw new Error("brand is required")
+
+        const brandExist =await Brand.findOne({_id:id});
+        if(!brandExist) throw new Error("brand not found")
+
     const alreadyExist = await Brand.findOne({ brand }, { _id: { $not: id } });
     if (alreadyExist) throw new Error("brand already exist");
 
@@ -134,6 +147,8 @@ async function updateBrandHandler(req, res) {
         result: newData,
       });
   } catch (error) {
+    console.log(error.message);
+    
     return res
       .status(400)
       .json({ status: false, msg: error.message, result: [] });
@@ -145,6 +160,13 @@ async function updateModelHandler(req, res) {
     const { model } = req.body;
     const { id } = req.params;
     const { brand } = req.body;
+
+    if(!brand) throw new Error("brand is required")
+      if(!model) throw new Error("model is required")
+
+        const existData = await Model.findById(id);
+
+        if(!existData) throw new Error("model not exist")
 
     const alreadyExist = await Model.findOne({ model,brand }, { _id: { $not: id } });
     if (alreadyExist) throw new Error("model already exist");
@@ -670,7 +692,7 @@ async function deleteMsgsHandler(req, res) {
 
     res
       .status(200)
-      .json({ status: true, msg: "Msg delete Successfully", result: newData });
+      .json({ status: true, msg: "Model delete Successfully", result: newData });
   } catch (error) {
     res.status(400).json({ status: false, msg: error.message, result: "" });
   }
@@ -681,7 +703,7 @@ async function getSingleCars(req, res) {
     const id = req.params.id;
     const car = await Car.findById(id);
     if (!car) {
-      throw new Error("user not found");
+      throw new Error("Car not found");
     }
     res.status(200).json({ msg: "success", status: true, result: car });
   } catch (error) {

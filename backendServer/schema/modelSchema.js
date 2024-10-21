@@ -8,6 +8,7 @@ const modelSchema = new mongoose.Schema(
       required: true,
       trim: true,
       maxlength: [50, "Max 50 characters allowed"],
+      lowercase: true
     },
     brand: {
       type: mongoose.Types.ObjectId,
