@@ -9,7 +9,6 @@ import { useDispatch } from "react-redux"
 
 export default function MsgComponent({ item, type = "admin" }) {
 
-console.log(item);
 
   const dispatch = useDispatch();
 

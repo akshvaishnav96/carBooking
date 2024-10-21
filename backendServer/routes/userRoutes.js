@@ -44,7 +44,7 @@
 
 import { Router } from "express";
 import {  getRentCarhandler, logoutHandler, loginHandler, registrationHandler, uplodeRentCarhandler, loginCheck, getAllUserBookings, cancelBooking } from "../controllers/userhandlers.js";
-import {  getAllBrands,getAllModels,getuplodedCars,getSingleCars, updateCarHandler, fetchSingleUser} from "../controllers/adminHandle.js";
+import {  getAllBrands,getAllModels,getuplodedCars,getSingleCars, updateBookingCarHandler, fetchSingleUser} from "../controllers/adminHandle.js";
 import { auth } from "../middlewares/auth.js";
 
 
@@ -66,7 +66,7 @@ userRouter.route("/login").post(loginHandler);
 userRouter.route("/logout").post(auth,logoutHandler);
 userRouter.route("/rentCar").post(uplodeRentCarhandler);
 userRouter.route("/logincheck").get(auth,loginCheck)
-userRouter.route("/cars/:id").patch(auth,updateCarHandler)
+userRouter.route("/cars/:id").patch(auth,updateBookingCarHandler)
 userRouter.route("/booking/:id").patch(auth,cancelBooking)
 
 

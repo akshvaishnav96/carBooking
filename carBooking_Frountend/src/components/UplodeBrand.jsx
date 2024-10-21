@@ -8,6 +8,8 @@ import ButtonWithDelete from "./ButtonWithDelete";
 export default function UplodeBrand() {
   const dispatch = useDispatch();
   const [error, setError] = useState("");
+  const [isEdit, setIsEdit] = useState(false);
+  const [editId,setEditId] = useState("");
   const { brandInputVal, brand } = useSelector((state) => state.cars);
   async function handleSubmit(e) {
     e.preventDefault();
@@ -20,20 +22,29 @@ export default function UplodeBrand() {
       brand: brandInputVal,
     };
 
-    const data = await fetchHandler(
-      "/api/v1/admin/cars/brand",
-      "post",
-      formData
-    );
+    const data = isEdit
+      ? await fetchHandler(`/api/v1/admin/cars/brand/${editId}`, "patch", formData)
+      : await fetchHandler("/api/v1/admin/cars/brand", "post", formData);
 
     if (data.status < 400) {
       dispatch(setBrand(data.data.result));
       dispatch(clearInputs());
-      toast.success(`${brandInputVal} added successfully`);
+      
+      toast.success(`${brandInputVal} ${isEdit ? "updated" : "added"} successfully`);
       setError("");
     } else {
       toast.error(data.response.data.msg);
     }
+
+    setIsEdit(false)
+    setEditId("");
+    dispatch(clearInputs());
+  }
+
+  async function cancelHandler(){ 
+    setEditId("");
+    setIsEdit(false);
+    dispatch(clearInputs());
   }
 
   return (
@@ -79,18 +90,23 @@ export default function UplodeBrand() {
               type="submit"
               className=" flex w-full justify-center rounded-md bg-slate-500 px-3 py-1.5 my-2 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
             >
-              Add
+             {isEdit ? "update" : "Add"}
             </button>
+            {isEdit && <button onClick={cancelHandler}
+         type="button"
+         className="flex w-full my-4 justify-center rounded-md bg-slate-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
+       >
+         Cancel
+       </button>}
           </div>
         </div>
       </form>
-          <div className=" ml-9 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8 p-4">
-          
-      {brand &&
-        brand.map((item) => (
-            <ButtonWithDelete item={item} deletePath="brand" />
-        ))}
-          </div>
+      <div className=" ml-9 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8 p-4">
+        {brand &&
+          brand.map((item) => (
+            <ButtonWithDelete item={item} deletePath="brand" setIsEdit={setIsEdit} setEditId={setEditId} />
+          ))}
+      </div>
     </div>
   );
 }
