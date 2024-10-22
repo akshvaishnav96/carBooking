@@ -27,6 +27,7 @@ export default function MsgComponent({ item, type = "admin" }) {
     }
   }
 
+console.log(item);
 
   return (
     <>
@@ -45,7 +46,7 @@ export default function MsgComponent({ item, type = "admin" }) {
         <div class="flex items-center relative">
           <img
             class="w-25 h-25 rounded-full mr-4"
-            src={`${item.carDetails.image}`}
+            src={`${item.carDetails.images[0]}`}
             alt="Avatar of Jonathan Reinink"
           />
           {item.bookingStatus === "cancelled" &&<div className="Cancelled bg-red-500 py-5 px-10 rotate-[-35deg] text-white text-center text-3xl w-[25rem] absolute opacity-[0.7] rounded-l left-0">Cancelled</div>}

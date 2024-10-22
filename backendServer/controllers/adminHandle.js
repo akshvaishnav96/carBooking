@@ -387,7 +387,6 @@ async function getAllModels(req, res) {
     let result = null;
 
     if (brand) {
-      result = await Model.find({ brand });
 
       result = await Model.aggregate([
         {
@@ -430,6 +429,10 @@ async function getAllModels(req, res) {
         },
       ]);
     }
+
+
+
+    
 
     res
       .status(200)
@@ -606,12 +609,28 @@ async function deleteModelHandler(req, res) {
 
     if (!modelData) throw new Error("nothing to delete something went wrong");
 
-    const newData = await Model.find({});
+    let result = await Model.aggregate([
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brand",
+        },
+      },
+      {
+        $addFields: {
+          brand: {
+            $first: "$brand",
+          },
+        },
+      },
+    ]);
 
     res.status(200).json({
       status: true,
       msg: "Model deleted Successfully",
-      result: newData,
+      result
     });
   } catch (error) {
     res.status(400).json({ status: false, msg: error.message, result: "" });

@@ -1,14 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { clearInputs, inputHandler, setCars, setMsgData } from "../slices/carSlice";
 import { fetchHandler } from "../utils/handlers";
 import { redirect, useNavigate } from "react-router-dom";
 import {toast} from "react-toastify"
+import HashLoader from 'react-spinners/HashLoader';
+
 
 export default function CarBooking({ item }) {
   const dispatch = useDispatch();
   const navigate = useNavigate()
   const today = new Date().toISOString().split("T")[0];
+  const [isLoading,setIsLoading] = useState(false)
 
 
 
@@ -29,11 +32,14 @@ export default function CarBooking({ item }) {
         name: nameVal,
         address: addressVal,
       };
+      setIsLoading(true)
       const response = await fetchHandler(
         `/api/v1/user/cars/${item._id}`,
         "patch",
         formData
       );
+      setIsLoading(false)
+
       if(response.status){
 
         dispatch(setCars(response.data.result.newData));
@@ -194,9 +200,9 @@ export default function CarBooking({ item }) {
             />
           </div>
         </div>}
-        <button className="btn bg-blue-500 px-4 py-2 rounded text-white">
+      {isLoading ? <HashLoader color="green"/>:  <button className="btn bg-blue-500 px-4 py-2 rounded text-white">
           Book Now
-        </button>
+        </button>}
       </form>
     </>
   );

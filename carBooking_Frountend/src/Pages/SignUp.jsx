@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { clearInputs, inputHandler } from "../slices/userSlice"
 import { fetchHandler } from "../utils/handlers"
 import { useDispatch, useSelector } from "react-redux"
 
+import {toast} from "react-toastify"
+import HashLoader from 'react-spinners/HashLoader';
 
 function Signup() {
 
   const [error, setError] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const { email, username, password, mobile } = useSelector(state => state.user)
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -33,15 +37,19 @@ function Signup() {
       email, mobile, password, username
     }
 
-
-    try {
+    setIsLoading(true)
       const response = await fetchHandler("/api/v1/user/register", "post", formData);
+    setIsLoading(false)
 
-      dispatch(clearInputs())
-    } catch (error) {
-      console.log(error);
+      if(response.status < 400){
+        toast.success(response.data.msg)
+        dispatch(clearInputs())
+        navigate("/login")
+      }else{
+        toast.error(response.response.data.msg)
 
-    }
+      }
+
 
 
   }
@@ -122,9 +130,9 @@ function Signup() {
             </div>
 
             <div className="!mt-12">
-              <button type="submit" onSubmit={handleSubmit} className="w-full py-3 px-4 tracking-wider text-sm rounded-md text-white bg-slate-700 hover:bg-gray-800 focus:outline-none">
+             {isLoading ? <HashLoader color="green"/> : <button type="submit" onSubmit={handleSubmit} className="w-full py-3 px-4 tracking-wider text-sm rounded-md text-white bg-slate-700 hover:bg-gray-800 focus:outline-none">
                 Create an account
-              </button>
+              </button>}
             </div>
             <p className="text-gray-800 text-sm mt-6 text-center">Already have an account? <Link to="/login" className="text-slate-600 font-semibold hover:underline ml-1">Login here</Link></p>
           </form>

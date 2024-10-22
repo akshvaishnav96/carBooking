@@ -1,7 +1,7 @@
 import { User } from "../schema/userSchema.js";
 import jwt from "jsonwebtoken";
-import {Msg} from "../schema/messageSchema.js"
-import {Car} from "../schema/carSchema.js"
+import { Msg } from "../schema/messageSchema.js"
+import { Car } from "../schema/carSchema.js"
 
 const generateAccessTokenAndRefreshToken = async function (userID) {
   try {
@@ -122,8 +122,6 @@ async function loginHandler(req, res) {
   }
 }
 
-
-
 function getRentCarhandler(req, res) {
 }
 
@@ -170,13 +168,13 @@ async function getAllUserBookings(req, res) {
           localField: "booking",
           foreignField: "_id",
           as: "userBookings",
-          pipeline:[
+          pipeline: [
             {
               $lookup: {
                 from: "cars",
                 localField: "carDetails",
                 foreignField: "_id",
-                as: "carDetails",pipeline:[
+                as: "carDetails", pipeline: [
                   {
                     $lookup: {
                       from: "brands",
@@ -195,11 +193,11 @@ async function getAllUserBookings(req, res) {
                   },
                   {
                     $addFields: {
-                      model:{
+                      model: {
                         $first: "$model",
                       },
-                      brand:{
-                        $first:"$brand"
+                      brand: {
+                        $first: "$brand"
                       }
                     },
                   },
@@ -208,7 +206,7 @@ async function getAllUserBookings(req, res) {
             },
             {
               $addFields: {
-                carDetails:{
+                carDetails: {
                   $first: "$carDetails",
                 }
               },
@@ -218,12 +216,12 @@ async function getAllUserBookings(req, res) {
       }
     ])
 
-   res.status(200).json({msg:"success",status:true,result:userData[0].userBookings})
+    res.status(200).json({ msg: "success", status: true, result: userData[0].userBookings })
 
 
 
   } catch (error) {
-    res.status(400).json({msg:"failed",status:false,result:[]})
+    res.status(400).json({ msg: "failed", status: false, result: [] })
 
   }
 
@@ -231,92 +229,90 @@ async function getAllUserBookings(req, res) {
 }
 
 
-async function cancelBooking(req,res){
+async function cancelBooking(req, res) {
 
 
 
-      try {
-          const id = req.params.id;
+  try {
+    const id = req.params.id;
 
-          const msgData = await Msg.findByIdAndUpdate(id,{bookingStatus:"cancelled"},{new:true})
-          
-          const carData = await Car.findByIdAndUpdate(msgData.carDetails,{booked:false,startdate:undefined,enddate:undefined})
-          const newData = await User.aggregate([
+    const msgData = await Msg.findByIdAndUpdate(id, { bookingStatus: "cancelled" }, { new: true })
+
+    const carData = await Car.findByIdAndUpdate(msgData.carDetails, { booked: false, startdate: undefined, enddate: undefined })
+    const newData = await User.aggregate([
+      {
+        $match: {
+          _id: req.user._id
+        },
+      }, {
+        $lookup: {
+          from: "msgs",
+          localField: "booking",
+          foreignField: "_id",
+          as: "userBookings",
+          pipeline: [
             {
-              $match: {
-                _id: req.user._id
-              },
-            }, {
               $lookup: {
-                from: "msgs",
-                localField: "booking",
+                from: "cars",
+                localField: "carDetails",
                 foreignField: "_id",
-                as: "userBookings",
-                pipeline:[
+                as: "carDetails", pipeline: [
                   {
                     $lookup: {
-                      from: "cars",
-                      localField: "carDetails",
+                      from: "brands",
+                      localField: "brand",
                       foreignField: "_id",
-                      as: "carDetails",pipeline:[
-                        {
-                          $lookup: {
-                            from: "brands",
-                            localField: "brand",
-                            foreignField: "_id",
-                            as: "brand",
-                          },
-                        },
-                        {
-                          $lookup: {
-                            from: "models",
-                            localField: "model",
-                            foreignField: "_id",
-                            as: "model",
-                          },
-                        },
-                        {
-                          $addFields: {
-                            model:{
-                              $first: "$model",
-                            },
-                            brand:{
-                              $first:"$brand"
-                            }
-                          },
-                        },
-                      ]
+                      as: "brand",
+                    },
+                  },
+                  {
+                    $lookup: {
+                      from: "models",
+                      localField: "model",
+                      foreignField: "_id",
+                      as: "model",
                     },
                   },
                   {
                     $addFields: {
-                      carDetails:{
-                        $first: "$carDetails",
+                      model: {
+                        $first: "$model",
+                      },
+                      brand: {
+                        $first: "$brand"
                       }
                     },
                   },
                 ]
-              }
-            }
-          ])
-
-
-          res.status(201).json({msg:"successfully cancelled",status:false,result:newData})
-
-          
-      } catch (error) {
-        res.status(400).json({msg:error.message,status:false,result:[]})
-
-        
+              },
+            },
+            {
+              $addFields: {
+                carDetails: {
+                  $first: "$carDetails",
+                }
+              },
+            },
+          ]
+        }
       }
-    
-  
+    ])
+
+
+    res.status(201).json({ msg: "successfully cancelled", status: false, result: newData })
+
+
+  } catch (error) {
+    res.status(400).json({ msg: error.message, status: false, result: [] })
+
+
+  }
+
+
 
 
 
 }
-
-
 
 function loginCheck(req, res) {
 

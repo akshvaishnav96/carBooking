@@ -45,7 +45,7 @@ export default function Booking() {
                     </div>
                 </div>
                 :
-                <h3 className='text-3xl italic my-5 mx-5'>No messages Available</h3>
+                <h3 className='text-3xl italic my-5 mx-5'>No Bookings Available</h3>
             }
 
         </>

@@ -4,11 +4,13 @@ import { clearInputs, inputHandler, setBrand, setModel, setSelectedBrand } from 
 import { fetchHandler } from '../utils/handlers'
 import { toast } from 'react-toastify'
 import ButtonWithDelete from "../components/ButtonWithDelete"
+import HashLoader from 'react-spinners/HashLoader'
 
 export default function UplodeModel() {
   const dispatch = useDispatch()
   const [error, setError] = useState({});
   const [isEdit, setIsEdit] = useState(false);
+  const [isLoading,setIsLoading] = useState(false)
   const [editId,setEditId] = useState("");
 
 
@@ -35,9 +37,12 @@ async function handleSubmit(e){
 
   
  try {
+
+  setIsLoading(true)
   const data = isEdit
   ? await fetchHandler(`/api/v1/admin/cars/model/${editId}`, "patch", formData)
   : await fetchHandler("/api/v1/admin/cars/model", "post", formData);
+  setIsLoading(false)
 
    if (data.status < 400) {
      dispatch(setModel(data.data.result))
@@ -121,12 +126,12 @@ async function cancelHandler(){
 
 
      <div>
-       <button
+      {isLoading ? <HashLoader color="green"/> :  <button
          type="submit"
          className="flex w-full justify-center rounded-md bg-slate-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
        >
          {isEdit ? "Update" : "Add"}
-       </button>
+       </button>}
        {isEdit && <button onClick={cancelHandler}
          type="button"
          className="flex w-full my-4 justify-center rounded-md bg-slate-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
@@ -139,10 +144,10 @@ async function cancelHandler(){
    </div>
  </form>
  <div className=" ml-9 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8 p-4">
-      {model &&
+      {model ?
         model.map((item) => (
             <ButtonWithDelete item={item} deletePath="model" setIsEdit={setIsEdit} setEditId={setEditId} />
-        ))}
+        )):<h3 className="text-3xl italic">No Model's Available</h3>}
           </div>
 </div>
   )

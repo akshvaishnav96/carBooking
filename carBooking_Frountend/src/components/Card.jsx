@@ -9,10 +9,14 @@ import { toast } from "react-toastify";
 const Card = ({ item }) => {
   const dispatch = useDispatch();
   const location = useLocation();
+console.log(item);
 
   async function deleteCar(id) {
     try {
       const response = await fetchHandler(`/api/v1/admin/cars/${id}`, "delete");
+    
+     
+      
       dispatch(setCars(response.data.result));
       toast.success("successfully deleted")
     } catch (error) {
@@ -25,7 +29,7 @@ const Card = ({ item }) => {
   return (
     <div className="w-96 ml-2 flex flex-col items-center bg-white shadow-md rounded-xl transition-transform duration-500 hover:scale-105 hover:shadow-xl">
       <img
-        src={`${item.images}`}
+        src={`${item.images[0]}`}
         alt="Product"
         className="h-48 w-96 rounded-t-xl"
       />{" "}
@@ -84,6 +88,7 @@ const Card = ({ item }) => {
         </div>
       </div>
     </div>
+
   );
 };
 

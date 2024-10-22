@@ -1,20 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchHandler } from "../utils/handlers";
 import { setBrand, setBrandInputVal, setModel, setModelInputVal, setSelectedBrand } from "../slices/carSlice";
 import { toast } from "react-toastify";
 import { FaEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
+import HashLoader from 'react-spinners/HashLoader';
+
 
 export default function ButtonWithDelete({ item, deletePath,setIsEdit ,setEditId}) {
   const dispatch = useDispatch();
+  const [isLoading,setIsLoading] = useState(false)
   const {brand,model} = useSelector(state=>state.cars)
   async function deleteHandler(id) {
     try {
+      setIsLoading(true)
       const response = await fetchHandler(
         `/api/v1/admin/cars/${deletePath}/${id}`,
         "delete"
       );
+      setIsLoading(false)
+
 
       if (deletePath === "brand") {
         dispatch(setBrand(response.data.result));
@@ -62,7 +68,7 @@ export default function ButtonWithDelete({ item, deletePath,setIsEdit ,setEditId
           <span>edit</span>
         </button>
 
-        <button
+        {isLoading ? <HashLoader color="green"/> :<button
           onClick={() => deleteHandler(item._id)}
           class="text-slate-800 hover:text-blue-600 text-sm bg-white hover:bg-slate-100 border border-slate-200 rounded-r-lg font-medium px-4 py-2 inline-flex space-x-1 items-center"
         >
@@ -70,7 +76,7 @@ export default function ButtonWithDelete({ item, deletePath,setIsEdit ,setEditId
             <MdDeleteForever />
           </span>
           <span>Delete</span>
-        </button>
+        </button>}
       </div>
     </div>
   );

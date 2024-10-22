@@ -6,6 +6,8 @@ import { clearInputs, inputHandler, setLoggedUser } from "../slices/userSlice";
 import { fetchHandler } from "../utils/handlers";
 import { toast } from "react-toastify"
 import { setLoggedAdmin } from "../slices/carSlice";
+import HashLoader from 'react-spinners/HashLoader';
+
 
 
 function Login() {
@@ -18,6 +20,7 @@ function Login() {
 
 
   const [error, setError] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
   const { email, password } = useSelector(state => state.user)
 
   async function handleSubmit(e) {
@@ -38,7 +41,9 @@ function Login() {
 
 
     try {
+      setIsLoading(true)
       const response = await fetchHandler("/api/v1/user/login", "post", formData);
+      setIsLoading(false)
 
 
       if (response.status === 302) {
@@ -52,7 +57,7 @@ function Login() {
         }
       }
 
-      if (response.data.status) {
+      if (response.status<400) {
         if (response.data.result?.role === "user") {
 
           localStorage.setItem("user", JSON.stringify(response.data.result))
@@ -72,7 +77,7 @@ function Login() {
           return navigate("/admin")
         }
       } else {
-        toast.error("something went wrong while login")
+        toast.error(response.response.data.msg)
       }
     } catch (error) {
       console.log(error.message);
@@ -84,13 +89,6 @@ function Login() {
 
   }
 
-
-  // useEffect(() => {
-
-  //   const localUser = JSON.parse(localStorage.getItem("user"));
-  //   if (localUser.role === "user") { dispatch(setLoggedUser(localUser)) } else { dispatch(setLoggedUser(localUser)) }
-
-  // }, [dispatch])
 
 
   return (
@@ -162,12 +160,12 @@ function Login() {
         </div>
 
         <div>
-          <button
+          {isLoading ? <HashLoader color="green"/> :<button
             type="submit"
             className="flex w-full justify-center rounded-md bg-slate-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
           >
             Sign in
-          </button>
+          </button>}
         </div>
 
         <p className="mt-10 text-center text-md text-gray-500 mr-4">

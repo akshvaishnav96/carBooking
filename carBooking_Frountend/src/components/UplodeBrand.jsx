@@ -4,12 +4,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchHandler } from "../utils/handlers";
 import { toast } from "react-toastify";
 import ButtonWithDelete from "./ButtonWithDelete";
+import HashLoader from "react-spinners/HashLoader";
 
 export default function UplodeBrand() {
   const dispatch = useDispatch();
   const [error, setError] = useState("");
   const [isEdit, setIsEdit] = useState(false);
-  const [editId,setEditId] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [editId, setEditId] = useState("");
   const { brandInputVal, brand } = useSelector((state) => state.cars);
   async function handleSubmit(e) {
     e.preventDefault();
@@ -21,15 +23,16 @@ export default function UplodeBrand() {
     const formData = {
       brand: brandInputVal,
     };
-
+    setIsLoading(true)
     const data = isEdit
       ? await fetchHandler(`/api/v1/admin/cars/brand/${editId}`, "patch", formData)
       : await fetchHandler("/api/v1/admin/cars/brand", "post", formData);
+    setIsLoading(false)
 
     if (data.status < 400) {
       dispatch(setBrand(data.data.result));
       dispatch(clearInputs());
-      
+
       toast.success(`${brandInputVal} ${isEdit ? "updated" : "added"} successfully`);
       setError("");
     } else {
@@ -41,7 +44,7 @@ export default function UplodeBrand() {
     dispatch(clearInputs());
   }
 
-  async function cancelHandler(){ 
+  async function cancelHandler() {
     setEditId("");
     setIsEdit(false);
     dispatch(clearInputs());
@@ -86,26 +89,26 @@ export default function UplodeBrand() {
           </div>
 
           <div>
-            <button
+            {isLoading ? <HashLoader color="green"/> : <button
               type="submit"
               className=" flex w-full justify-center rounded-md bg-slate-500 px-3 py-1.5 my-2 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
             >
-             {isEdit ? "update" : "Add"}
-            </button>
+              {isEdit ? "update" : "Add"}
+            </button>}
             {isEdit && <button onClick={cancelHandler}
-         type="button"
-         className="flex w-full my-4 justify-center rounded-md bg-slate-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
-       >
-         Cancel
-       </button>}
+              type="button"
+              className="flex w-full my-4 justify-center rounded-md bg-slate-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
+            >
+              Cancel
+            </button>}
           </div>
         </div>
       </form>
       <div className=" ml-9 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8 p-4">
-        {brand &&
+        {brand && brand.length>0 ?
           brand.map((item) => (
             <ButtonWithDelete item={item} deletePath="brand" setIsEdit={setIsEdit} setEditId={setEditId} />
-          ))}
+          )) :<h3 className="text-3xl italic">No Brand's Available</h3>}
       </div>
     </div>
   );
