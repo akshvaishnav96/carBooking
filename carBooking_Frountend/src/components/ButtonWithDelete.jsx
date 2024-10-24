@@ -44,7 +44,7 @@ export default function ButtonWithDelete({ item, deletePath,setIsEdit ,setEditId
     setEditId(id)
   }
   return (
-    <div class="flex items-center justify-between border-b">
+    <div class="flex items-center justify-between bg-gradient-to-r from-neutral-300 to-stone-500">
       <div class="p-3 text-gray-700 text-l font-bold">
         Brand :{" "}
         {deletePath === "brand"

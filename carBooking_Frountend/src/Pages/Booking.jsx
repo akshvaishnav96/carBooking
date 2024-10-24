@@ -15,16 +15,18 @@ export default function Booking() {
     const { loggedUser, userBookings } = useSelector((state) => state.user)
     const { loggedAdmin } = useSelector((state) => state.cars)
 
-
-
-    useEffect(() => {
-        let userData = JSON.parse(localStorage.getItem("user"));
+useEffect(()=>{
+  let userData = JSON.parse(localStorage.getItem("user"));
         if (userData && userData.role == "admin") {
           return navigate("/admin");
         }
         if(!userData){
           return navigate("/login");
         }
+},[])
+
+    useEffect(() => {
+      
         async function getBookings() {
             const response = await fetchHandler(`/api/v1/user/booking`);
             if(response.status === 401){

@@ -6,11 +6,11 @@ import Footer from './Footer'
 
 export default function Wrapper() {
   return (
-    <>
+    <div className='bg-gray-200'>
     <Header />
     <Outlet />
     <Footer />
     
-    </>
+    </div>
   )
 }

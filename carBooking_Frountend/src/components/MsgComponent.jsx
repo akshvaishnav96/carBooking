@@ -31,7 +31,7 @@ console.log(item);
 
   return (
     <>
-      <div class={` border border-gray-200  bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between ${item.bookingStatus === "cancelled" ? "opacity-[0.3] bg-gray-200":""}`}>
+      <div class={` border border-gray-200  bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between  bg-gradient-to-r from-slate-300 to-stone-400 ${item.bookingStatus === "cancelled" ? "opacity-[0.3] bg-gray-200":""}`}>
         <div class="mb-8">
           <p class="text-sm text-gray-600 flex items-center">
             Brand : {item.carDetails.brand.brand}

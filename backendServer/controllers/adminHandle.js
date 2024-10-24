@@ -103,11 +103,7 @@ async function addCarHandler(req, res) {
 
 
       [
-        {
-          $match: {
-            _id: new mongoose.Types.ObjectId(id),
-          },
-        },
+        
         {
           $lookup: {
             from: "brands",

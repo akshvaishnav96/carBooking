@@ -5,26 +5,25 @@ import { useLoaderData } from "react-router-dom";
 import FilterComponent from "../components/filterComponent";
 import { setBrand, setCars, setModel } from "../slices/carSlice";
 import Card from "../components/Card";
+import HomePageHeader from "../components/HomePageHeader";
 export default function Home() {
   const dispatch = useDispatch();
   const data = useLoaderData();
-  
-  const {model,carsData,brand} = useSelector((state)=>state.cars)
+
+  const { model, carsData, brand } = useSelector((state) => state.cars);
 
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    if(data){
+    if (data) {
       setLoading(false);
     }
   }, [data]);
 
-
-  useEffect(()=>{
-      
-      dispatch(setCars(data.cars.data.result))
-      dispatch(setModel(data.model.data.result))
-      dispatch(setBrand(data.brand.data.result))
-  },[])
+  useEffect(() => {
+    dispatch(setCars(data.cars.data.result));
+    dispatch(setModel(data.model.data.result));
+    dispatch(setBrand(data.brand.data.result));
+  }, []);
 
   if (loading) {
     return (
@@ -43,17 +42,26 @@ export default function Home() {
 
   return (
     <>
-      <h3 className="text-4xl font-bold text-cyan-700 text-center mb-3 mt-8">
-        Filter Options
-      </h3>
-      <FilterComponent model={model} cars={carsData} brand={brand} />
-    
+      <div className="relative">
+        <HomePageHeader />
+        <div className="absolute top-[30%] w-[30%] left-[10%] ">
+          <h2 className="text-white text-7xl text-wrap uppercase text-center italic">Best Place <> To get car</> on rent</h2>
+          <h3 className="text-4xl font-bold text-cyan-700 text-center mb-3 mt-8">
+            Filter Options
+          </h3>
+          <FilterComponent model={model} cars={carsData} brand={brand} />
+        </div>
+      </div>
+
       <h3 className="text-4xl font-bold text-cyan-900 text-center mb-3 mt-8">
         Our Collection
       </h3>
       <div className=" font-serif ml-9 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-        {carsData ? carsData.map((item)=> <Card item={item} key={item._id}/>) : <h2>Nothing to show write now</h2>}
-
+        {carsData ? (
+          carsData.map((item) => <Card item={item} key={item._id} />)
+        ) : (
+          <h2>Nothing to show write now</h2>
+        )}
       </div>
     </>
   );
