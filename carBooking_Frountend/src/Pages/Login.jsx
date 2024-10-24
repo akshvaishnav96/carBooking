@@ -7,6 +7,7 @@ import { fetchHandler } from "../utils/handlers";
 import { toast } from "react-toastify"
 import { setLoggedAdmin } from "../slices/carSlice";
 import HashLoader from 'react-spinners/HashLoader';
+import Cookies from 'js-cookie';
 
 
 
@@ -80,7 +81,6 @@ function Login() {
         toast.error(response.response.data.msg)
       }
     } catch (error) {
-      console.log(error.message);
 
       toast.error("something went while while login")
 
@@ -88,6 +88,22 @@ function Login() {
 
 
   }
+
+  useEffect(()=>{
+    const localData =localStorage.getItem("user");
+    if(localData){
+      let data = JSON.parse(localData)
+      if( data && data.role == "admin"){
+        return navigate("/admin")
+      }
+      if( data && data.role == "user"){
+        return navigate("/")
+      }
+      
+    }
+    
+    
+  },[])
 
 
 

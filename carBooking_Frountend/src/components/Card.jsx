@@ -9,7 +9,6 @@ import { toast } from "react-toastify";
 const Card = ({ item }) => {
   const dispatch = useDispatch();
   const location = useLocation();
-console.log(item);
 
   async function deleteCar(id) {
     try {
@@ -27,18 +26,18 @@ console.log(item);
   }
 
   return (
-    <div className="w-96 ml-2 flex flex-col items-center bg-white shadow-md rounded-xl transition-transform duration-500 hover:scale-105 hover:shadow-xl">
+    <div className="w-96 ml-2 flex flex-col items-center bg-white shadow-md rounded-xl transition-transform duration-500 hover:scale-105 hover:shadow-xl bg-gradient-to-r from-neutral-200 to-stone-300">
       <img
         src={`${item.images[0]}`}
         alt="Product"
-        className="h-48 w-96 rounded-t-xl"
+        className="h-56 w-96 rounded-t-xl border border-b-amber-800"
       />{" "}
       <div className="px-4 py-3 w-full">
         <span className="text-gray-700 mr-3 uppercase text-xs">
-          {item.brand.brand}
+          {item?.brand?.brand}
         </span>
         <p className="text-lg font-bold text-black text-[2rem] truncate block capitalize">
-         {item.brand.brand}-{item.model.model}
+         {item?.brand?.brand}-{item?.model?.model}
         </p>
         {location.pathname.startsWith("/admin") && <p className="text-lg font-semibold text-black">{item.carnumber.toUpperCase()}</p>}
 

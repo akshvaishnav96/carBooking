@@ -5,6 +5,7 @@ import {configDotenv} from "dotenv"
 import dbConnect from "./db/db.js"
 import { userRouter } from "./routes/userRoutes.js"
 import { adminRouter } from "./routes/adminRoutes.js"
+import { openRouter } from "./routes/openRoutes.js"
 
 
 configDotenv();
@@ -27,6 +28,7 @@ app.use(express.static("public"))
 app.use(express.json())
 app.use("/api/v1/user",userRouter);
 app.use("/api/v1/admin",adminRouter);
+app.use("/api/v1/",openRouter);
 
 
 
