@@ -52,7 +52,7 @@ export default function Home() {
         Our Collection
       </h3>
       <div className=" font-serif ml-9 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-        {carsData ? carsData.map((item)=> <Card item={item}/>) : <h2>Nothing to show write now</h2>}
+        {carsData ? carsData.map((item)=> <Card item={item} key={item._id}/>) : <h2>Nothing to show write now</h2>}
 
       </div>
     </>

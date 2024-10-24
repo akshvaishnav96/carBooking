@@ -119,7 +119,7 @@ const FilterComponent = ({ model, cars, brand }) => {
           >
             <option value="">Car Brand's</option>
             {brand?.map((item) => (
-              <option value={item._id}>{item.brand}</option>
+              <option value={item._id} key={item._id}>{item.brand}</option>
             ))}
           </select>
         </div>
@@ -132,7 +132,7 @@ const FilterComponent = ({ model, cars, brand }) => {
           >
             <option value="">Select Car Model</option>
             {model?.map((item) => (
-              <option value={item._id}>{item.model}</option>
+              <option value={item._id} key={item._id}>{item.model}</option>
             ))}
           </select>
         </div>

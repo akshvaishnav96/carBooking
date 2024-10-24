@@ -99,7 +99,40 @@ async function addCarHandler(req, res) {
     });
 
     if (!car) throw new Error("car not uploded successfully");
-    const updatedData = await Car.find({});
+    const updatedData = await Car.aggregate(
+
+
+      [
+        {
+          $match: {
+            _id: new mongoose.Types.ObjectId(id),
+          },
+        },
+        {
+          $lookup: {
+            from: "brands",
+            localField: "brand",
+            foreignField: "_id",
+            as: "brand",
+          },
+        },
+        {
+          $lookup: {
+            from: "models",
+            localField: "model",
+            foreignField: "_id",
+            as: "model",
+          },
+        },
+        {
+          $addFields: {
+            brand: { $first: "$brand" },
+            model: { $first: "$model" },
+          },
+        },
+      ]
+  
+    )
     res.status(201).json({
       status: true,
       msg: "car adding Successfully",
@@ -720,7 +753,38 @@ async function deleteMsgsHandler(req, res) {
 async function getSingleCars(req, res) {
   try {
     const id = req.params.id;
-    const car = await Car.findById(id);
+    // const car = await Car.findById(id);
+
+      const car = await Car.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(id),
+        },
+      },
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brand",
+        },
+      },
+      {
+        $lookup: {
+          from: "models",
+          localField: "model",
+          foreignField: "_id",
+          as: "model",
+        },
+      },
+      {
+        $addFields: {
+          brand: { $first: "$brand" },
+          model: { $first: "$model" },
+        },
+      },
+    ]);
+
     if (!car) {
       throw new Error("Car not found");
     }

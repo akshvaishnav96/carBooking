@@ -38,7 +38,7 @@ export default function Product() {
       </h3>
       <div className="flex flex-wrap gap-4 justify-center   my-5">
         {productsData.map((item) => (
-          <Card key={item._id} item={item} />
+          <Card key={item._id} item={item}  />
         ))}
       </div>
     </div>

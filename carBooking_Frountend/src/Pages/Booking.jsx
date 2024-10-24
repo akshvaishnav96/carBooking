@@ -41,7 +41,7 @@ export default function Booking() {
 
                 <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
                     <div className=" ml-9 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-                        {userBookings?.length > 0 && userBookings?.map((item) => <UserMsgBox item={item} type="user" />)}
+                        {userBookings?.length > 0 && userBookings?.map((item) => <UserMsgBox key={item._id} item={item} type="user" />)}
                     </div>
                 </div>
                 :

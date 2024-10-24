@@ -138,7 +138,7 @@ setloading(false);
           >
             <option value="">Select Car Brand</option>
             {brand?.map((item) => (
-              <option value={item._id}>{item.brand}</option>
+              <option value={item._id} key={item._id}>{item.brand}</option>
             ))}
           </select>
          {error?.brand && <p className='text-red-500'>{error.brand}</p>}
@@ -154,7 +154,7 @@ setloading(false);
             >
               <option value="">Select Car Model</option>
               {model?.map((item) => (
-                <option value={item._id}>{item.model}</option>
+                <option value={item._id} key={item._id}>{item.model}</option>
               ))}
             </select>
          {error?.model && <p className='text-red-500'>{error.model}</p>}

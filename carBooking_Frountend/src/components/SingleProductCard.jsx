@@ -11,6 +11,7 @@ export default function SingleProductCard({ item }) {
 const BASE_URL = import.meta.env.VITE_BASE_URL
 
 
+console.log(item);
 
 
 
@@ -20,8 +21,8 @@ const BASE_URL = import.meta.env.VITE_BASE_URL
     <>
       {item && <div className='bg-white flex gap-20 p-20 justify-center items-center'>
         <div className='flex flex-col justify-center min-w-[40%] max-w-[60%] min-h-[20rem] bg-gray-200 rounded p-10 shadow-lg shadow-gray-500/50' >
-          <p className='text-2xl text-gray-500' > <span className='text-gray-800 font-bold '>Brand : </span>{item?.brand}</p>
-          <p className='text-2xl text-gray-500' > <span className='text-gray-800 font-bold '>Model : </span>{item?.model}</p>
+          <p className='text-2xl text-gray-500' > <span className='text-gray-800 font-bold '>Brand : </span>{item?.brand?.brand}</p>
+          <p className='text-2xl text-gray-500' > <span className='text-gray-800 font-bold '>Model : </span>{item?.model?.model}</p>
 
           <p className='text-2xl text-gray-500' > <span className='text-gray-800 font-bold '>Car Number : </span>{item?.carnumber}</p>
 

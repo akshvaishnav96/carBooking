@@ -25,7 +25,7 @@ useEffect(()=>{
    
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
      <div className=" ml-9 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-        {msgData?.map((item)=> <MsgComponent item={item}/>)}
+        {msgData?.map((item)=> <MsgComponent item={item} key={item._id} />)}
       </div>
       </div>
       :

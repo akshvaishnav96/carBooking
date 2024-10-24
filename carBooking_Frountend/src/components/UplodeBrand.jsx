@@ -107,7 +107,7 @@ export default function UplodeBrand() {
       <div className=" ml-9 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8 p-4">
         {brand && brand.length>0 ?
           brand.map((item) => (
-            <ButtonWithDelete item={item} deletePath="brand" setIsEdit={setIsEdit} setEditId={setEditId} />
+            <ButtonWithDelete item={item} key={item._id} deletePath="brand" setIsEdit={setIsEdit} setEditId={setEditId} />
           )) :<h3 className="text-3xl italic">No Brand's Available</h3>}
       </div>
     </div>
