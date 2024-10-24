@@ -4,8 +4,9 @@ import { useLoaderData, useNavigate, useParams } from "react-router-dom";
 import HashLoader from "react-spinners/HashLoader";
 import SingleProductCard from "../components/SingleProductCard";
 import { fetchHandler } from "../utils/handlers";
-import { setLoading, setSingleCar } from "../slices/carSlice";
+import { setLoading, setLoggedAdmin, setSingleCar } from "../slices/carSlice";
 import CarBooking from "../components/CarBooking";
+import { setLoggedUser } from "../slices/userSlice";
 
 export default function SingleProduct() {
   const dispatch = useDispatch();
@@ -17,17 +18,15 @@ export default function SingleProduct() {
   const {loggedAdmin} = useSelector((state)=>state.cars)
 
   useEffect(() => {
-    if(!loggedUser?.username){
-      navigate("/login")
-    }
-
-    if(loggedAdmin?.role){
-      navigate("/admin")
-    }
     async function getSingleproduct() {
       dispatch(setLoading(true))
       const response = await fetchHandler(`/api/v1/user/cars/${id}`);      
-  
+  if(response.status === 401){
+    localStorage.removeItem("user")
+    dispatch(setLoggedAdmin(""))
+    dispatch(setLoggedUser(""))
+    navigate("/login")
+  }
       
       
       dispatch(setSingleCar(response.data.result[0]))
@@ -35,6 +34,20 @@ export default function SingleProduct() {
     }
       getSingleproduct();
   }, [id]);
+
+
+  useEffect(()=>{
+    let userData = JSON.parse(localStorage.getItem("user"));
+
+    if (userData && userData.role == "admin") {
+      return navigate("/admin");
+    }
+
+    if(!userData){
+      return navigate("/login");
+
+    }
+  },[])
 
   if (loading) {
     return (

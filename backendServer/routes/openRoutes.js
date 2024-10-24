@@ -7,11 +7,11 @@ import {
 } from "../controllers/adminHandle.js";
 
 
-const adminRouter = Router();
+const openRouter = Router();
 
-adminRouter.route("/cars/brand").get(getAllBrands);
-adminRouter.route("/cars/model").get(getAllModels);
-adminRouter.route("/cars").get(getuplodedCars);
+openRouter.route("/cars/brand").get(getAllBrands);
+openRouter.route("/cars/model").get(getAllModels);
+openRouter.route("/cars").get(getuplodedCars);
 
 
-export { adminRouter };
+export { openRouter };

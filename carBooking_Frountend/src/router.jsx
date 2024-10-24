@@ -28,9 +28,9 @@ const router = createBrowserRouter([
         element: <Home />,
         loader: async () => {
 
-          const brand = await fetchHandler("/api/v1/user/cars/brand")
-          const model = await fetchHandler("/api/v1/user/cars/model")
-          const cars = await fetchHandler("/api/v1/user/cars")
+          const brand = await fetchHandler("/api/v1/cars/brand")
+          const model = await fetchHandler("/api/v1/cars/model")
+          const cars = await fetchHandler("/api/v1/cars")
 
           return { brand, model, cars }
 

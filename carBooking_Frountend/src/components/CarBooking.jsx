@@ -40,7 +40,7 @@ export default function CarBooking({ item }) {
       );
       setIsLoading(false)
 
-      if(response.status){
+      if(response.status<400){
 
         dispatch(setCars(response.data.result.newData));
         dispatch(setMsgData(response.data.result.msgData));
@@ -56,7 +56,7 @@ export default function CarBooking({ item }) {
   
   return (
     <>
-      <form className=" space-y-6 w-[40%]  my-6" onSubmit={handleSubmit}>
+      <form className=" space-y-6 w-[100%]  my-6" onSubmit={handleSubmit}>
       <h3 className="text-3xl font-bold text-green-900 text-center mb-3 mt-8">
         fill below details to book your ride
       </h3>

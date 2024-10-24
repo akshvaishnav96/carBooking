@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { fetchHandler } from '../utils/handlers';
@@ -13,7 +13,10 @@ const dispatch = useDispatch()
     try {
 
       let url = `/api/v1/user/booking/${id}`
-      const response = await fetchHandler(url, "patch"); 
+      const response = await fetchHandler(url, "patch");
+      
+      
+
       
       dispatch(setUserBookings(response.data.result.userBookings));
       toast.success("successfully updated")
@@ -23,6 +26,25 @@ const dispatch = useDispatch()
 
     }
   }
+
+
+  useEffect(()=>{
+    let userData = JSON.parse(localStorage.getItem("user"));
+
+    if (userData && userData.role == "admin") {
+      return navigate("/admin");
+    }
+
+    if (userData && userData.role == "user") {
+      return navigate("/");
+    }
+
+
+    if(!userData){
+      return navigate("/login");
+
+    }
+  },[])
 
 
 
