@@ -44,14 +44,14 @@ export default function ButtonWithDelete({ item, deletePath,setIsEdit ,setEditId
     setEditId(id)
   }
   return (
-    <div class="flex items-center justify-between bg-gradient-to-r from-neutral-300 to-stone-500">
-      <div class="p-3 text-gray-700 text-l font-bold">
+    <div class="flex items-center justify-between bg-gradient-to-r from-yellow-700 to-stone-700 text-white rounded-md font-semibold">
+      <div class="p-3  text-l font-bold">
         Brand :{" "}
         {deletePath === "brand"
           ? item?.brand?.toUpperCase()
           : item?.brand?.brand?.toUpperCase()}
         {item.model && (
-          <div class=" text-gray-700 text-sm font-bold">
+          <div class="  text-sm font-bold">
             Model : {item.model.toUpperCase()}
           </div>
         )}
