@@ -27,7 +27,6 @@ export default function MsgComponent({ item, type = "admin" }) {
     }
   }
 
-console.log(item);
 
   return (
     <>

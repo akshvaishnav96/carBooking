@@ -19,7 +19,6 @@ const Card = ({ item }) => {
       dispatch(setCars(response.data.result));
       toast.success("successfully deleted")
     } catch (error) {
-      console.log(error.message);
       toast.success("Something went wrong while Deleting")
 
     }

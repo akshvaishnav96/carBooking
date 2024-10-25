@@ -45,18 +45,18 @@ export default function Home() {
       <div className="relative">
         <HomePageHeader />
         <div className="absolute top-[30%] w-[30%] left-[10%] ">
-          <h2 className="text-white text-7xl text-wrap uppercase text-center italic">Best Place <> To get car</> on rent</h2>
-          <h3 className="text-4xl font-bold text-cyan-700 text-center mb-3 mt-8">
+          <h2 className="text-[#d2f540] text-7xl text-wrap uppercase text-center font-bold">Best Place <span> To get car</span> on rent</h2>
+          <h3 className="text-4xl font-bold text-[#f5ffcc] text-center mb-3 mt-8">
             Filter Options
           </h3>
           <FilterComponent model={model} cars={carsData} brand={brand} />
         </div>
       </div>
 
-      <h3 className="text-4xl font-bold text-cyan-900 text-center mb-3 mt-8">
+      <h3 className="text-5xl font-bold bg-black text-[#d2f540] pt-[8rem] pb-[3rem] text-center ">
         Our Collection
       </h3>
-      <div className=" font-serif ml-9 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+      <div className=" font-serif ml-9 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-[10rem]">
         {carsData ? (
           carsData.map((item) => <Card item={item} key={item._id} />)
         ) : (

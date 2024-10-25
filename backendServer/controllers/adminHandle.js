@@ -31,14 +31,12 @@ async function addModelhandler(req, res) {
   try {
     const { brand, model } = req.body;
 
-    console.log(brand,model);
 
     if (!brand) throw new Error("Brand is required");
     if (!model) throw new Error("Model is required");
 
     const lowerCaseModel = model.toLowerCase();
 
-    console.log("a",await Model.find({}));
     const alreadyExist = await Model.findOne({
       $and: [{ brand }, { model:lowerCaseModel}],
     });
@@ -153,7 +151,6 @@ async function updateBrandHandler(req, res) {
     const { brand } = req.body;
     const { id } = req.params;
 
-    console.log(brand,id);
     
 
     if(!brand) throw new Error("brand is required")
@@ -176,7 +173,6 @@ async function updateBrandHandler(req, res) {
         result: newData,
       });
   } catch (error) {
-    console.log(error.message);
     
     return res
       .status(400)

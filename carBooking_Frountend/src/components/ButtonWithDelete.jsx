@@ -31,7 +31,6 @@ export default function ButtonWithDelete({ item, deletePath,setIsEdit ,setEditId
       }
       toast.success("successfully deleted");
     } catch (error) {
-      console.log(error.message);
       toast.error("Something went wrong while Deleting");
     }
   }
@@ -44,7 +43,7 @@ export default function ButtonWithDelete({ item, deletePath,setIsEdit ,setEditId
     setEditId(id)
   }
   return (
-    <div class="flex items-center justify-between bg-gradient-to-r from-yellow-700 to-stone-700 text-white rounded-md font-semibold">
+    <div class="flex items-center justify-between  text-black shadow-xl p-2 border border-gray-300 rounded-md font-semibold">
       <div class="p-3  text-l font-bold">
         Brand :{" "}
         {deletePath === "brand"

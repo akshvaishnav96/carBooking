@@ -19,6 +19,8 @@ function Signup() {
   async function handleSubmit(e) {
     e.preventDefault();
     if (!email) setError((prev) => {
+
+      
       return { ...prev, email: "email is required" }
     })
     if (!username) setError((prev) => {
@@ -30,6 +32,26 @@ function Signup() {
     if (!mobile) setError((prev) => {
       return { ...prev, mobile: "mobile is required" }
     })
+
+    if(email){
+      const validEmailPattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
+      const result = validEmailPattern.test(email)
+      if(!result){
+        setError((prev) => {
+          return { ...prev, email: "please Enter Valid Email" }
+        })
+        return;
+      }
+      
+    }
+
+    if(mobile){
+      if(mobile.length<10 || mobile.length>10){
+        setError((prev) => {
+          return { ...prev, mobile: "mobile is must be 10 digit" }
+        })
+      }
+    }
 
     if (!email || !mobile || !password || !username) return
 
@@ -56,7 +78,6 @@ function Signup() {
 
   return (
     <>
-      {console.log(error)}
       <div className="font-[sans-serif] bg-white max-w-4xl flex items-center mx-auto md:h-screen p-2">
         <div className="grid md:grid-cols-3 items-center shadow-[0_2px_10px_-3px_rgba(6,81,237,0.3)] rounded-xl overflow-hidden">
           <div className="max-md:order-1 flex flex-col justify-center space-y-16 max-md:mt-16 min-h-full bg-gradient-to-r from-slate-500 to-slate-800 lg:px-8 px-4 py-4">

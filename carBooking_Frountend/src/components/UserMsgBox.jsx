@@ -22,7 +22,6 @@ const navigate = useNavigate()
       dispatch(setUserBookings(response.data.result.userBookings));
       toast.success("successfully updated")
     } catch (error) {
-      console.log(error);
       toast.success("Something went wrong while Ypdating")
 
     }

@@ -50,8 +50,8 @@ export default function AdminHeaderWrapper() {
     <>
       <nav className="bg-gray-200 p-7  flex justify-end">
         {navItems.map((item) => (
-          <Link to={item.nav} key={item._id}>
-            <span className={`${item.active?"text-green-500" : "text-white"} bg-gradient-to-t uppercase from-slate-500 to-slate-800 p-2  px-6 py-4 m-3  rounded-xl cursor-pointer duration-300 hover:text-green-500 hover:rounded`}>
+          <Link to={item.nav} key={item._id} className="transition duration-300 ease-in-out hover:scale-110">
+            <span className={`${item.active?"bg-green-500 text-white " : "text-black bg-gray-300"} shadow-md uppercase  p-2  px-6 py-4 m-3  rounded-xl cursor-pointer duration-300 hover:text-white  hover:bg-green-500 `}>
               {item.text}
             </span>
           </Link>
