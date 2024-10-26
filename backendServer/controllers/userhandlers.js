@@ -40,11 +40,13 @@ async function registrationHandler(req, res) {
       throw new Error(err);
     }
 
+    const userCount = await User.find().countDocuments()
     const user = await User.create({
       username,
       email,
       mobile,
       password,
+      role:userCount === 0 ?"admin":"user"
     });
 
     const newuser = await User.findById(user._id).select(
@@ -60,22 +62,21 @@ async function registrationHandler(req, res) {
 async function loginHandler(req, res) {
 
   try {
-    const alreadyAccessToken = await req.cookies.accessToken;
-    if (alreadyAccessToken) {
-      const jwtverify = jwt.verify(
-        alreadyAccessToken,
-        process.env.ACCESS_TOKEN_KEY
-      );
-      const _id = jwtverify.id;
-      const authorizedUser = await User.findById({ _id }).select("-password -refreshToken");
+    // const alreadyAccessToken = await req.cookies.accessToken;
+    // if (alreadyAccessToken) {
+    //   const jwtverify = jwt.verify(
+    //     alreadyAccessToken,
+    //     process.env.ACCESS_TOKEN_KEY
+    //   );
+    //   const _id = jwtverify.id;
+    //   const authorizedUser = await User.findById({ _id }).select("-password -refreshToken");
 
-      if (authorizedUser) {
-        return res.status(302).json({ msg: "user already logged in", result: authorizedUser, status: "false" })
-      }
-    }
+    //   if (authorizedUser) {
+    //     return res.status(302).json({ msg: "user already logged in", result: authorizedUser, status: "false" })
+    //   }
+    // }
 
     const { email, password } = req.body;
-
 
     if (!email) {
       throw new Error("Please enter username or email to login");
@@ -313,15 +314,117 @@ async function cancelBooking(req, res) {
 
 }
 
-function loginCheck(req, res) {
+async function deleteCarBooking(req,res){
+  try {
+    const bookingId = req.params.id;
 
 
-  if (req.user) {
-    res.status(200).json({ msg: "user already logged in", result: req.user, status: true })
-  } else {
-    res.status(400).json({ msg: "not logged in", result: "", status: false });
+    await User.updateOne(
+      { _id: req.user._id },
+      { $pull: { booking: bookingId } }
+    );
+
+    const newData = await User.aggregate([
+      {
+        $match: {
+          _id: req.user._id
+        },
+      },
+      {
+        $lookup: {
+          from: "msgs",
+          localField: "booking",
+          foreignField: "_id",
+          as: "userBookings",
+          pipeline: [
+            {
+              $lookup: {
+                from: "cars",
+                localField: "carDetails",
+                foreignField: "_id",
+                as: "carDetails", pipeline: [
+                  {
+                    $lookup: {
+                      from: "brands",
+                      localField: "brand",
+                      foreignField: "_id",
+                      as: "brand",
+                    },
+                  },
+                  {
+                    $lookup: {
+                      from: "models",
+                      localField: "model",
+                      foreignField: "_id",
+                      as: "model",
+                    },
+                  },
+                  {
+                    $addFields: {
+                      model: {
+                        $first: "$model",
+                      },
+                      brand: {
+                        $first: "$brand"
+                      }
+                    },
+                  },
+                ]
+              },
+            },
+            {
+              $addFields: {
+                carDetails: {
+                  $first: "$carDetails",
+                }
+              },
+            },
+          ]
+        }
+      }
+    ])
+
+
+    res.status(201).json({ msg: "successfully cancelled", status: false, result: newData })
+
+
+  } catch (error) {
+    res.status(400).json({ msg: error.message, status: false, result: [] })
+
+
   }
 }
+
+async function loginCheck(req, res) {
+        const cookie = req.cookies.accessToken;
+
+  if (cookie) {
+    const verifyToken = jwt.verify(cookie, process.env.ACCESS_TOKEN_KEY);
+    if (!verifyToken) {
+        return res.status(401).json({ status: false, msg: 'Not Allowed to access resouces', result: "" });
+    }
+
+    let tokenUserId = verifyToken.id;
+
+    const existUser = await User.findById(tokenUserId).select("-password -refreshToken -booking -mobile");
+    if (!existUser) {
+        return res.status(401).json({ status: false, msg: 'User not found', result: "" });
+    }
+
+    return res.status(200).json({ status: true, msg: `${existUser.role} logged in`, result: existUser });
+
+
+
+
+} else {
+    return res.status(401).json({ status: false, msg: 'please login first', result: "" });
+
+}
+
+
+}
+
+
 
 
 
@@ -333,5 +436,6 @@ export {
   logoutHandler,
   loginCheck,
   getAllUserBookings,
-  cancelBooking
+  cancelBooking,
+  deleteCarBooking
 };

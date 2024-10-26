@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
-import { clearInputs, inputHandler } from "../slices/userSlice"
+import { clearInputs, inputHandler, setLoggedUser } from "../slices/userSlice"
 import { fetchHandler } from "../utils/handlers"
 import { useDispatch, useSelector } from "react-redux"
 
 import {toast} from "react-toastify"
 import HashLoader from 'react-spinners/HashLoader';
+import { setLoggedAdmin } from '../slices/carSlice';
 
 function Signup() {
 
@@ -15,6 +16,62 @@ function Signup() {
   const { email, username, password, mobile } = useSelector(state => state.user)
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const { loggedUser } = useSelector(state => state.user)
+  const { loggedAdmin } = useSelector(state => state.cars)
+
+
+  useEffect(()=>{
+
+  
+    let loggedData = JSON.parse(localStorage.getItem("user"));
+  
+    if(loggedData){
+      
+        if(loggedData.role === "admin"){
+          navigate("/admin")
+        }
+
+        if(loggedData.role === "user"){
+          navigate("/")
+        }
+    }
+  
+   
+  
+   },[loggedUser,loggedAdmin])
+
+
+  useEffect(() => {
+      async function logginCheckHandler() {
+        try {
+          const logged = await fetchHandler("/api/v1/logincheck");
+  
+          if (logged.status === 401) {
+            dispatch(setLoggedUser(""));
+            dispatch(setLoggedAdmin(""));
+            localStorage.removeItem("user");
+            return;
+          }
+  
+          if (logged.status === 200) {
+            if (logged.data.result.role === "user") {
+              dispatch(setLoggedUser(logged.data.result));
+            }
+  
+            if (logged.data.result.role === "admin") {
+              dispatch(setLoggedAdmin(logged.data.result));
+            }
+  
+            localStorage.setItem("user", JSON.stringify(logged.data.result));
+          }
+        } catch (error) {
+          console.log(error.message);
+        }
+      }
+  
+      logginCheckHandler();
+    }, []);
+
 
   async function handleSubmit(e) {
     e.preventDefault();

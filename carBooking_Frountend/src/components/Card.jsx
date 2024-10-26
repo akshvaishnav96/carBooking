@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdEdit } from "react-icons/md";
 import { fetchHandler } from "../utils/handlers";
 import { setCars } from "../slices/carSlice";
 import { toast } from "react-toastify";
@@ -13,14 +13,11 @@ const Card = ({ item }) => {
   async function deleteCar(id) {
     try {
       const response = await fetchHandler(`/api/v1/admin/cars/${id}`, "delete");
-    
-     
-      
-      dispatch(setCars(response.data.result));
-      toast.success("successfully deleted")
-    } catch (error) {
-      toast.success("Something went wrong while Deleting")
 
+      dispatch(setCars(response.data.result));
+      toast.success("successfully deleted");
+    } catch (error) {
+      toast.success("Something went wrong while Deleting");
     }
   }
 
@@ -36,9 +33,13 @@ const Card = ({ item }) => {
           {item?.brand?.brand}
         </span>
         <p className="text-lg font-bold text-black text-[2rem] truncate block capitalize">
-         {item?.brand?.brand}-{item?.model?.model}
+          {item?.brand?.brand}-{item?.model?.model}
         </p>
-        {location.pathname.startsWith("/admin") && <p className="text-lg font-semibold text-black">{item.carnumber.toUpperCase()}</p>}
+        {location.pathname.startsWith("/admin") && (
+          <p className="text-lg font-semibold text-black">
+            {item.carnumber.toUpperCase()}
+          </p>
+        )}
 
         {item.booked && (
           <div className="py-3">
@@ -61,14 +62,22 @@ const Card = ({ item }) => {
         ) : (
           <div className="flex items-center my-5">
             {location.pathname.startsWith("/admin") ? (
-              <div className="flex items-center gap-5">
-             
-              <MdDelete
-                onClick={() => deleteCar(item._id)}
-                className="text-2xl text-red-700 cursor-pointer"
-              />
+              <>
+                <div className="flex items-center p-5">
+                <Link to={`/admin/editcar/${item._id}`}> <MdEdit
+              
+                    className="text-2xl text-blue-700 cursor-pointer"
+                  />
+                  </Link>
+                </div>
 
-              </div>
+                <div className="flex items-center gap-5">
+                  <MdDelete
+                    onClick={() => deleteCar(item._id)}
+                    className="text-2xl text-red-700 cursor-pointer"
+                  />
+                </div>
+              </>
             ) : (
               <Link to={`/cars/${item._id}`} className="w-full">
                 <button className="px-6 py-2 text-white bg-slate-700 rounded hover:bg-slate-900">
@@ -86,7 +95,6 @@ const Card = ({ item }) => {
         </div>
       </div>
     </div>
-
   );
 };
 

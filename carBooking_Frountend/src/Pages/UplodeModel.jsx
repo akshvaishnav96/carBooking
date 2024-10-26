@@ -1,20 +1,41 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearInputs, inputHandler, setBrand, setModel, setSelectedBrand } from '../slices/carSlice'
 import { fetchHandler } from '../utils/handlers'
 import { toast } from 'react-toastify'
 import ButtonWithDelete from "../components/ButtonWithDelete"
 import HashLoader from 'react-spinners/HashLoader'
+import { useLoaderData } from "react-router-dom";
+
 
 export default function UplodeModel() {
   const dispatch = useDispatch()
+  
+  const data = useLoaderData()
+  const {brand,modelInputVal,selectedBrand,model}  = useSelector((state)=>state.cars)
+
+  
+
+  if(data.brand.status <400){
+    dispatch(setBrand(data.brand.data.result));
+  }
+
+  if(data.model.status <400){
+    dispatch(setModel(data.model.data.result));
+  }
+  useEffect(()=>{
+
+
+  },[brand,model])
+
+
+
   const [error, setError] = useState({});
   const [isEdit, setIsEdit] = useState(false);
   const [isLoading,setIsLoading] = useState(false)
   const [editId,setEditId] = useState("");
 
 
-  const {brand,modelInputVal,selectedBrand,model}  = useSelector((state)=>state.cars)
   
 async function handleSubmit(e){
   e.preventDefault()
@@ -54,11 +75,12 @@ async function handleSubmit(e){
   }
  } catch (error) {
   toast.error(error.message)
+  setIsLoading(false)
 
  }
- setIsEdit(false)
- setEditId("");
- dispatch(clearInputs());
+setIsEdit(false)
+setEditId("");
+dispatch(clearInputs());
 }
 
 async function cancelHandler(){ 

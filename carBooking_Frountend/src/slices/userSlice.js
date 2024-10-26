@@ -6,7 +6,7 @@ const initialState={
     email:"",
     mobile:"",
     password:"",
-    loggedUser:[],
+    loggedUser:"",
     userBookings:[]
 }
 

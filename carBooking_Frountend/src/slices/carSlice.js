@@ -9,8 +9,7 @@ const initialState = {
   brand: [],
   model: [],
   msgData: [],
-  loggedAdmin: [],
-
+  loggedAdmin: "",
 
   brandInputVal: "",
   modelInputVal: "",
@@ -22,10 +21,9 @@ const initialState = {
   startdate: "",
   enddate: "",
   userNameVal: "",
-  addressVal: '',
+  addressVal: "",
   mobileVal: "",
-  emailVal: ""
-
+  emailVal: "",
 };
 
 const carsSlice = createSlice({
@@ -42,14 +40,14 @@ const carsSlice = createSlice({
       state.carDescriptionVal = "";
       state.carImagesVal = "";
       state.carNumberVal = "";
-      state.startdate = "",
-        state.enddate = "",
-        state.selectedBrand = "", state.selectedModel = "";
-      state.addressVal = "",
-        state.mobileVal = "",
-        state.userNameVal = "",
-        state.emailVal = ""
-
+      state.startdate = "";
+      state.enddate = "";
+      state.selectedBrand = "";
+      state.selectedModel = "";
+      state.addressVal = "";
+      state.mobileVal = "";
+      state.userNameVal = "";
+      state.emailVal = "";
     },
 
     setCars: function (state, action) {
@@ -86,14 +84,20 @@ const carsSlice = createSlice({
       state.msgData = action.payload;
     },
     setLoggedAdmin: function (state, action) {
-      state.loggedAdmin = action.payload
+      state.loggedAdmin = action.payload;
     },
     setBrandInputVal: function (state, action) {
-      state.brandInputVal = action.payload
+      state.brandInputVal = action.payload;
     },
     setModelInputVal: function (state, action) {
-      state.modelInputVal = action.payload
-    }
+      state.modelInputVal = action.payload;
+    },
+    setCarNumberVal: function (state, action) {
+      state.carNumberVal = action.payload;
+    },
+    setCarDescriptionVal: function (state, action) {
+      state.carDescriptionVal = action.payload;
+    },
   },
 });
 
@@ -111,7 +115,9 @@ export const {
   setMsgData,
   setLoggedAdmin,
   setBrandInputVal,
-  setModelInputVal
+  setModelInputVal,
+  setCarNumberVal,
+  setCarDescriptionVal,
 } = carsSlice.actions;
 
 export default carsSlice.reducer;

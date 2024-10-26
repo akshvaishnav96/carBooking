@@ -5,7 +5,6 @@ import HashLoader from "react-spinners/HashLoader";
 import SingleProductCard from "../components/SingleProductCard";
 import { fetchHandler } from "../utils/handlers";
 import { setLoading, setLoggedAdmin, setSingleCar } from "../slices/carSlice";
-import CarBooking from "../components/CarBooking";
 import { setLoggedUser } from "../slices/userSlice";
 
 export default function SingleProduct() {

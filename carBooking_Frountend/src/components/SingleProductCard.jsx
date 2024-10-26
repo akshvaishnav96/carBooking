@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { FaStar } from "react-icons/fa6";
-import CarBooking from './CarBooking';
+import CarBooking from '../Pages/CarBooking';
 import {useLocation, useNavigate} from "react-router-dom"
 
 export default function SingleProductCard({ item }) {

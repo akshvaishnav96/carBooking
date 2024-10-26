@@ -98,11 +98,13 @@ import {
   getuplodedCars,
   updateBookingCarHandler,
   updateBrandHandler,
+  updateCarHandler,
   updateModelHandler
 
 } from "../controllers/adminHandle.js";
 import { auth } from "../middlewares/auth.js";
 import { upload } from "../middlewares/multer.js";
+import { loginCheck } from "../controllers/userhandlers.js";
 
 const adminRouter = Router();
 
@@ -110,6 +112,8 @@ const adminRouter = Router();
 adminRouter.route("/cars/brand").get(auth,getAllBrands);
 adminRouter.route("/cars/model").get(auth,getAllModels);
 adminRouter.route("/cars").get(auth,getuplodedCars);
+adminRouter.route("/logincheck").get(auth,loginCheck);
+
 
 
 
@@ -136,6 +140,7 @@ adminRouter
 
 adminRouter.route("/cars/brand/:id").patch(auth,updateBrandHandler)
 adminRouter.route("/cars/model/:id").patch(auth,updateModelHandler)
+adminRouter.route("/cars/:id").patch(auth,upload.fields([{ name: "images", maxCount: 4 }]), updateCarHandler);
 
 
 /////////////////////////////////////////////////////
