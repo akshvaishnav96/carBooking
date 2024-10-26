@@ -40,11 +40,13 @@ async function registrationHandler(req, res) {
       throw new Error(err);
     }
 
+    const userCount = await User.find().countDocuments()
     const user = await User.create({
       username,
       email,
       mobile,
       password,
+      role:userCount === 0 ?"admin":"user"
     });
 
     const newuser = await User.findById(user._id).select(
@@ -312,6 +314,87 @@ async function cancelBooking(req, res) {
 
 }
 
+async function deleteCarBooking(req,res){
+  try {
+    const bookingId = req.params.id;
+
+
+    await User.updateOne(
+      { _id: req.user._id },
+      { $pull: { booking: bookingId } }
+    );
+
+    const newData = await User.aggregate([
+      {
+        $match: {
+          _id: req.user._id
+        },
+      },
+      {
+        $lookup: {
+          from: "msgs",
+          localField: "booking",
+          foreignField: "_id",
+          as: "userBookings",
+          pipeline: [
+            {
+              $lookup: {
+                from: "cars",
+                localField: "carDetails",
+                foreignField: "_id",
+                as: "carDetails", pipeline: [
+                  {
+                    $lookup: {
+                      from: "brands",
+                      localField: "brand",
+                      foreignField: "_id",
+                      as: "brand",
+                    },
+                  },
+                  {
+                    $lookup: {
+                      from: "models",
+                      localField: "model",
+                      foreignField: "_id",
+                      as: "model",
+                    },
+                  },
+                  {
+                    $addFields: {
+                      model: {
+                        $first: "$model",
+                      },
+                      brand: {
+                        $first: "$brand"
+                      }
+                    },
+                  },
+                ]
+              },
+            },
+            {
+              $addFields: {
+                carDetails: {
+                  $first: "$carDetails",
+                }
+              },
+            },
+          ]
+        }
+      }
+    ])
+
+
+    res.status(201).json({ msg: "successfully cancelled", status: false, result: newData })
+
+
+  } catch (error) {
+    res.status(400).json({ msg: error.message, status: false, result: [] })
+
+
+  }
+}
+
 async function loginCheck(req, res) {
         const cookie = req.cookies.accessToken;
 
@@ -354,5 +437,5 @@ export {
   loginCheck,
   getAllUserBookings,
   cancelBooking,
-
+  deleteCarBooking
 };

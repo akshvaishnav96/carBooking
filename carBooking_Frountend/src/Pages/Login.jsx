@@ -107,9 +107,7 @@ function Login() {
         }
     }
   
-    if(!loggedData){
-      navigate("/login")
-    }
+   
   
    },[loggedUser,loggedAdmin])
 

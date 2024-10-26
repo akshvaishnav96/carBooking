@@ -123,7 +123,9 @@ const router = createBrowserRouter([
       {
         path: "/booking",
         element: <Booking />,
-     
+        loader:async (elem)=>{
+          return await fetchHandler(`/api/v1/user/booking`)
+        }
       },
 
 

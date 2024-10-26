@@ -30,6 +30,10 @@ app.use("/api/v1/user",userRouter);
 app.use("/api/v1/admin",adminRouter);
 app.use("/api/v1/",openRouter);
 
+app.use("/",(req,res)=>{
+    res.status(200).json({status:true});
+})
+
 
 
 app.listen(port,()=>{

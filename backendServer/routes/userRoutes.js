@@ -43,7 +43,7 @@
 
 
 import { Router } from "express";
-import {   logoutHandler, loginHandler, registrationHandler, loginCheck, getAllUserBookings, cancelBooking } from "../controllers/userhandlers.js";
+import {   logoutHandler, loginHandler, registrationHandler, loginCheck, getAllUserBookings, cancelBooking, deleteCarBooking } from "../controllers/userhandlers.js";
 import {  getAllBrands,getAllModels,getuplodedCars,getSingleCars, updateBookingCarHandler, fetchSingleUser} from "../controllers/adminHandle.js";
 import { auth } from "../middlewares/auth.js";
 
@@ -68,6 +68,7 @@ userRouter.route("/logout").post(auth,logoutHandler);
 
 userRouter.route("/cars/:id").patch(auth,updateBookingCarHandler)
 userRouter.route("/booking/:id").patch(auth,cancelBooking)
+userRouter.route("/booking/:id").delete(auth,deleteCarBooking)
 userRouter.route("/logincheck").get(auth,loginCheck);
 
 

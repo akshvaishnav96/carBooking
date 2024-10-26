@@ -1,28 +1,15 @@
 import React, { useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLoaderData, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { fetchHandler } from '../utils/handlers';
 import {setUserBookings} from "../slices/userSlice"
 import { useDispatch } from 'react-redux';
 
-export default function UserMsgBox({ item }) {
+export default function UserMsgBox({ item,updateBooking,deleteBooking }) {
 const dispatch = useDispatch()
 const navigate = useNavigate()
 
-  async function updateBooking(id) {
 
-    try {
-
-      let url = `/api/v1/user/booking/${id}`
-      const response = await fetchHandler(url, "patch");
-     
-      dispatch(setUserBookings(response.data.result.userBookings));
-      toast.success("successfully updated")
-    } catch (error) {
-      toast.success("Something went wrong while Ypdating")
-
-    }
-  }
 
 
   useEffect(()=>{
@@ -94,7 +81,7 @@ const navigate = useNavigate()
 
         <div className="flex items-center gap-5">
 
-          {item.bookingStatus == "booked" ? <button className="bg-blue-500 px-4 py-3 rounded text-white" onClick={() => updateBooking(item._id)}>cancel booking</button> :"" }
+          {item.bookingStatus == "booked" ? <button className="bg-blue-500 hover:bg-blue-800 px-4 py-3 rounded text-white" onClick={() => updateBooking(item._id)}>cancel booking</button> :<button className="bg-red-500 hover:bg-red-900 px-4 py-3 rounded text-white" onClick={() => deleteBooking(item._id)}>Delete</button> }
 
         </div>
        

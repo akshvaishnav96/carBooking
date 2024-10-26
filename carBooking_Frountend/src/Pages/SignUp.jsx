@@ -36,9 +36,7 @@ function Signup() {
         }
     }
   
-    if(!loggedData){
-      navigate("/login")
-    }
+   
   
    },[loggedUser,loggedAdmin])
 

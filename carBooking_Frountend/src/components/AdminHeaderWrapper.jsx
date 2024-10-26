@@ -34,7 +34,7 @@ export default function AdminHeaderWrapper() {
     navigate("/login")
   }
 
- },[loggedUser])
+ },[loggedUser,loggedAdmin])
   
   useEffect(() => {
     async function logginCheckHandler() {
