@@ -36,7 +36,6 @@ export default function UplodeCar() {
   
 
   useEffect(()=>{
-console.log(data);
 
     
     if(data.brand.status <400){

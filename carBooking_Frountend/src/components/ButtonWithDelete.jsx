@@ -43,23 +43,23 @@ export default function ButtonWithDelete({ item, deletePath,setIsEdit ,setEditId
     setEditId(id)
   }
   return (
-    <div class="flex items-center justify-between  text-black shadow-xl p-2 border border-gray-300 rounded-md font-semibold">
-      <div class="p-3  text-l font-bold">
+    <div className="flex items-center justify-between  text-black shadow-xl p-2 border border-gray-300 rounded-md font-semibold">
+      <div className="p-3  text-l font-bold">
         Brand :{" "}
         {deletePath === "brand"
           ? item?.brand?.toUpperCase()
           : item?.brand?.brand?.toUpperCase()}
         {item.model && (
-          <div class="  text-sm font-bold">
+          <div className="  text-sm font-bold">
             Model : {item.model.toUpperCase()}
           </div>
         )}
       </div>
 
-      <div class="p-3 flex gap-4">
+      <div className="p-3 flex gap-4">
         <button
           onClick={()=>editHandler(item._id)}
-          class="text-slate-800 hover:text-blue-600 text-sm bg-white hover:bg-slate-100 border border-slate-200 rounded-r-lg font-medium px-4 py-2 inline-flex space-x-1 items-center"
+          className="text-slate-800 hover:text-blue-600 text-sm bg-white hover:bg-slate-100 border border-slate-200 rounded-r-lg font-medium px-4 py-2 inline-flex space-x-1 items-center"
         >
           <span>
             <FaEdit />
@@ -69,7 +69,7 @@ export default function ButtonWithDelete({ item, deletePath,setIsEdit ,setEditId
 
         {isLoading ? <HashLoader color="green"/> :<button
           onClick={() => deleteHandler(item._id)}
-          class="text-slate-800 hover:text-blue-600 text-sm bg-white hover:bg-slate-100 border border-slate-200 rounded-r-lg font-medium px-4 py-2 inline-flex space-x-1 items-center"
+          className="text-slate-800 hover:text-blue-600 text-sm bg-white hover:bg-slate-100 border border-slate-200 rounded-r-lg font-medium px-4 py-2 inline-flex space-x-1 items-center"
         >
           <span>
             <MdDeleteForever />

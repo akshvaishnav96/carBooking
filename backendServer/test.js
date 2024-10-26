@@ -124,7 +124,6 @@ describe("Post addBrand", () => {
 
   it("should return status 400 - addBrandHandler, brand already exist", async () => {
     const brand = await Brand.find({}).limit(1)
-    console.log(brand);
 
     const response = await request(app)
       .post("/api/v1/admin/cars/brand")

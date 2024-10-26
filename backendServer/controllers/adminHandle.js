@@ -214,13 +214,11 @@ async function updateModelHandler(req, res) {
       },
     ]);
 
-    res
-      .status(201)
-      .json({
-        status: true,
-        msg: "successFully updated Model",
-        result: newData,
-      });
+    res.status(201).json({
+      status: true,
+      msg: "successFully updated Model",
+      result: newData,
+    });
   } catch (error) {
     return res
       .status(400)
@@ -234,8 +232,6 @@ async function updateCarHandler(req, res) {
     const images = req.files["images"];
 
     const existCar = await Car.findById(carId);
-  
-    
 
     if (!existCar) throw new Error("car not exist");
     if (!model) throw new Error("Car Model is required");
@@ -246,13 +242,12 @@ async function updateCarHandler(req, res) {
 
     if (images) {
       imagesPath = await fileUplode(images[0].path);
-      if(imagesPath){
-        await fileDelete(existCar.images[0],"image");
-    
+      if (imagesPath) {
+        await fileDelete(existCar.images[0], "image");
       }
     }
 
-    const car = await Car.findByIdAndUpdate(carId,{
+    const car = await Car.findByIdAndUpdate(carId, {
       brand,
       model,
       description,
@@ -290,7 +285,6 @@ async function updateCarHandler(req, res) {
       result: updatedData,
     });
   } catch (error) {
-
     await Promise.all(
       req.files["images"].map(async (item) => {
         try {
@@ -748,7 +742,12 @@ async function deleteBrandHandler(req, res) {
 async function deleteMsgsHandler(req, res) {
   try {
     const id = req.params.id;
-    const msgData = await Msg.findByIdAndDelete(id);
+
+    const msgData = await Msg.findById(id);
+    const carId = msgData.carDetails;
+    
+    await Car.findByIdAndUpdate(carId, { $set:{booked: false }});
+    await Msg.findByIdAndDelete(id);
 
     if (!msgData) throw new Error("nothing to delete something went wrong");
 
@@ -798,13 +797,11 @@ async function deleteMsgsHandler(req, res) {
       },
     ]);
 
-    res
-      .status(200)
-      .json({
-        status: true,
-        msg: "Model delete Successfully",
-        result: newData,
-      });
+    res.status(200).json({
+      status: true,
+      msg: "Model delete Successfully",
+      result: newData,
+    });
   } catch (error) {
     res.status(400).json({ status: false, msg: error.message, result: "" });
   }
