@@ -15,10 +15,7 @@ const navigate = useNavigate()
 
       let url = `/api/v1/user/booking/${id}`
       const response = await fetchHandler(url, "patch");
-      
-      
-
-      
+     
       dispatch(setUserBookings(response.data.result.userBookings));
       toast.success("successfully updated")
     } catch (error) {

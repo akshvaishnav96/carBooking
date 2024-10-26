@@ -3,11 +3,22 @@ import { clearInputs, inputHandler, setBrand } from "../slices/carSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchHandler } from "../utils/handlers";
 import { toast } from "react-toastify";
-import ButtonWithDelete from "./ButtonWithDelete";
+import ButtonWithDelete from "../components/ButtonWithDelete";
 import HashLoader from "react-spinners/HashLoader";
+import { useLoaderData } from "react-router-dom";
 
 export default function UplodeBrand() {
   const dispatch = useDispatch();
+  const brandData = useLoaderData();
+
+  useEffect(()=>{
+    
+      if(brandData.status <400){
+        dispatch(setBrand(brandData.data.result));
+      }
+  },[])
+
+  
   const [error, setError] = useState("");
   const [isEdit, setIsEdit] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

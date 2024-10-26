@@ -60,22 +60,21 @@ async function registrationHandler(req, res) {
 async function loginHandler(req, res) {
 
   try {
-    const alreadyAccessToken = await req.cookies.accessToken;
-    if (alreadyAccessToken) {
-      const jwtverify = jwt.verify(
-        alreadyAccessToken,
-        process.env.ACCESS_TOKEN_KEY
-      );
-      const _id = jwtverify.id;
-      const authorizedUser = await User.findById({ _id }).select("-password -refreshToken");
+    // const alreadyAccessToken = await req.cookies.accessToken;
+    // if (alreadyAccessToken) {
+    //   const jwtverify = jwt.verify(
+    //     alreadyAccessToken,
+    //     process.env.ACCESS_TOKEN_KEY
+    //   );
+    //   const _id = jwtverify.id;
+    //   const authorizedUser = await User.findById({ _id }).select("-password -refreshToken");
 
-      if (authorizedUser) {
-        return res.status(302).json({ msg: "user already logged in", result: authorizedUser, status: "false" })
-      }
-    }
+    //   if (authorizedUser) {
+    //     return res.status(302).json({ msg: "user already logged in", result: authorizedUser, status: "false" })
+    //   }
+    // }
 
     const { email, password } = req.body;
-
 
     if (!email) {
       throw new Error("Please enter username or email to login");
@@ -313,15 +312,36 @@ async function cancelBooking(req, res) {
 
 }
 
-function loginCheck(req, res) {
+async function loginCheck(req, res) {
+        const cookie = req.cookies.accessToken;
+
+  if (cookie) {
+    const verifyToken = jwt.verify(cookie, process.env.ACCESS_TOKEN_KEY);
+    if (!verifyToken) {
+        return res.status(401).json({ status: false, msg: 'Not Allowed to access resouces', result: "" });
+    }
+
+    let tokenUserId = verifyToken.id;
+
+    const existUser = await User.findById(tokenUserId).select("-password -refreshToken -booking -mobile");
+    if (!existUser) {
+        return res.status(401).json({ status: false, msg: 'User not found', result: "" });
+    }
+
+    return res.status(200).json({ status: true, msg: `${existUser.role} logged in`, result: existUser });
 
 
-  if (req.user) {
-    res.status(200).json({ msg: "user already logged in", result: req.user, status: true })
-  } else {
-    res.status(400).json({ msg: "not logged in", result: "", status: false });
-  }
+
+
+} else {
+    return res.status(401).json({ status: false, msg: 'please login first', result: "" });
+
 }
+
+
+}
+
+
 
 
 
@@ -333,5 +353,6 @@ export {
   logoutHandler,
   loginCheck,
   getAllUserBookings,
-  cancelBooking
+  cancelBooking,
+
 };

@@ -58,7 +58,6 @@ userRouter.route("/cars").get(getuplodedCars);
 userRouter.route("/cars/:id").get(auth,getSingleCars);
 userRouter.route("/user/:id").get(auth,fetchSingleUser);
 userRouter.route("/booking").get(auth,getAllUserBookings)
-userRouter.route("/logincheck").get(auth,loginCheck)
 
 //post routes //////////////////////////////////////
 userRouter.route("/register").post(registrationHandler);
@@ -69,6 +68,8 @@ userRouter.route("/logout").post(auth,logoutHandler);
 
 userRouter.route("/cars/:id").patch(auth,updateBookingCarHandler)
 userRouter.route("/booking/:id").patch(auth,cancelBooking)
+userRouter.route("/logincheck").get(auth,loginCheck);
+
 
 
 export {userRouter}

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import HashLoader from "react-spinners/HashLoader";
 import { useLoaderData } from "react-router-dom";
 import FilterComponent from "../components/filterComponent";
-import { setBrand, setCars, setModel } from "../slices/carSlice";
+import { clearInputs, setBrand, setCars, setModel } from "../slices/carSlice";
 import Card from "../components/Card";
 import HomePageHeader from "../components/HomePageHeader";
 export default function Home() {
@@ -20,6 +20,7 @@ export default function Home() {
   }, [data]);
 
   useEffect(() => {
+    dispatch(clearInputs())
     dispatch(setCars(data.cars.data.result));
     dispatch(setModel(data.model.data.result));
     dispatch(setBrand(data.brand.data.result));

@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom"
+import React, { useEffect } from "react";
+import { Link, useLoaderData } from "react-router-dom"
 import { MdDelete } from "react-icons/md";
 import { setMsgData } from "../slices/carSlice";
 import { toast } from "react-toastify";
@@ -11,6 +11,16 @@ export default function MsgComponent({ item, type = "admin" }) {
 
 
   const dispatch = useDispatch();
+  const msgData = useLoaderData()
+  
+  
+  useEffect(()=>{
+    console.log(msgData.data.result);
+    
+    if(msgData.status<400){
+      dispatch(setMsgData(msgData.data.result))
+    }
+  },[])
 
   async function updateBooking(id) {
 
@@ -26,6 +36,8 @@ export default function MsgComponent({ item, type = "admin" }) {
 
     }
   }
+
+
 
 
   return (

@@ -4,7 +4,7 @@ import { Model } from "../schema/modelSchema.js";
 import fs from "fs/promises";
 import { Car } from "../schema/carSchema.js";
 import { Msg } from "../schema/messageSchema.js";
-import { fileUplode } from "../utils/cloudnary.js";
+import { fileDelete, fileUplode } from "../utils/cloudnary.js";
 import mongoose from "mongoose";
 
 async function addBrandHandler(req, res) {
@@ -31,21 +31,18 @@ async function addModelhandler(req, res) {
   try {
     const { brand, model } = req.body;
 
-
     if (!brand) throw new Error("Brand is required");
     if (!model) throw new Error("Model is required");
 
     const lowerCaseModel = model.toLowerCase();
 
     const alreadyExist = await Model.findOne({
-      $and: [{ brand }, { model:lowerCaseModel}],
+      $and: [{ brand }, { model: lowerCaseModel }],
     });
 
-  
     if (alreadyExist) throw new Error("model already exist with this Brand");
     const result = await Model.create({ brand, model });
 
-    
     const newData = await Model.aggregate([
       {
         $lookup: {
@@ -87,7 +84,6 @@ async function addCarHandler(req, res) {
     const lowerCaseCarNumber = carnumber.toLowerCase();
     const imagesPath = await fileUplode(images[0].path);
 
-
     const car = await Car.create({
       brand,
       model,
@@ -97,36 +93,30 @@ async function addCarHandler(req, res) {
     });
 
     if (!car) throw new Error("car not uploded successfully");
-    const updatedData = await Car.aggregate(
-
-
-      [
-        
-        {
-          $lookup: {
-            from: "brands",
-            localField: "brand",
-            foreignField: "_id",
-            as: "brand",
-          },
+    const updatedData = await Car.aggregate([
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brand",
         },
-        {
-          $lookup: {
-            from: "models",
-            localField: "model",
-            foreignField: "_id",
-            as: "model",
-          },
+      },
+      {
+        $lookup: {
+          from: "models",
+          localField: "model",
+          foreignField: "_id",
+          as: "model",
         },
-        {
-          $addFields: {
-            brand: { $first: "$brand" },
-            model: { $first: "$model" },
-          },
+      },
+      {
+        $addFields: {
+          brand: { $first: "$brand" },
+          model: { $first: "$model" },
         },
-      ]
-  
-    )
+      },
+    ]);
     res.status(201).json({
       status: true,
       msg: "car adding Successfully",
@@ -151,12 +141,10 @@ async function updateBrandHandler(req, res) {
     const { brand } = req.body;
     const { id } = req.params;
 
-    
+    if (!brand) throw new Error("brand is required");
 
-    if(!brand) throw new Error("brand is required")
-
-        const brandExist =await Brand.findOne({_id:id});
-        if(!brandExist) throw new Error("brand not found")
+    const brandExist = await Brand.findOne({ _id: id });
+    if (!brandExist) throw new Error("brand not found");
 
     const alreadyExist = await Brand.findOne({ brand }, { _id: { $not: id } });
     if (alreadyExist) throw new Error("brand already exist");
@@ -165,15 +153,12 @@ async function updateBrandHandler(req, res) {
 
     const newData = await Brand.find({});
 
-    res
-      .status(201)
-      .json({
-        status: true,
-        msg: "successFully updated Brand",
-        result: newData,
-      });
+    res.status(201).json({
+      status: true,
+      msg: "successFully updated Brand",
+      result: newData,
+    });
   } catch (error) {
-    
     return res
       .status(400)
       .json({ status: false, msg: error.message, result: [] });
@@ -186,26 +171,28 @@ async function updateModelHandler(req, res) {
     const { id } = req.params;
     const { brand } = req.body;
 
-    if(!brand) throw new Error("brand is required")
-      if(!model) throw new Error("model is required")
+    if (!brand) throw new Error("brand is required");
+    if (!model) throw new Error("model is required");
 
-        const existData = await Model.findById(id);
+    const existData = await Model.findById(id);
 
-        if(!existData) throw new Error("model not exist")
+    if (!existData) throw new Error("model not exist");
 
-    const alreadyExist = await Model.findOne({ model,brand }, { _id: { $not: id } });
+    const alreadyExist = await Model.findOne(
+      { model, brand },
+      { _id: { $not: id } }
+    );
     if (alreadyExist) throw new Error("model already exist");
 
     let updationObj;
 
-    if (model&&brand) {
-      updationObj = {model,brand}
-    }else if(model){
-      updationObj = {model}
-    }else if(brand){
-      updationObj = {brand}
+    if (model && brand) {
+      updationObj = { model, brand };
+    } else if (model) {
+      updationObj = { model };
+    } else if (brand) {
+      updationObj = { brand };
     }
-
 
     const updatedModel = await Model.findOneAndUpdate({ _id: id }, updationObj);
 
@@ -229,9 +216,91 @@ async function updateModelHandler(req, res) {
 
     res
       .status(201)
-      .json({ status: true, msg: "successFully updated Model", result: newData });
+      .json({
+        status: true,
+        msg: "successFully updated Model",
+        result: newData,
+      });
   } catch (error) {
-    return res.status(400).json({status:false, msg: error.message,result:[] });
+    return res
+      .status(400)
+      .json({ status: false, msg: error.message, result: [] });
+  }
+}
+
+async function updateCarHandler(req, res) {
+  try {
+    const { model, brand, description, carId } = req.body;
+    const images = req.files["images"];
+
+    const existCar = await Car.findById(carId);
+  
+    
+
+    if (!existCar) throw new Error("car not exist");
+    if (!model) throw new Error("Car Model is required");
+    if (!brand) throw new Error("Car Brand is required");
+    if (!description) throw new Error("Car description is required");
+
+    let imagesPath;
+
+    if (images) {
+      imagesPath = await fileUplode(images[0].path);
+      if(imagesPath){
+        await fileDelete(existCar.images[0],"image");
+    
+      }
+    }
+
+    const car = await Car.findByIdAndUpdate(carId,{
+      brand,
+      model,
+      description,
+      images: imagesPath ? [imagesPath.url] : existCar.images[0],
+    });
+
+    if (!car) throw new Error("car not Updated successfully");
+    const updatedData = await Car.aggregate([
+      {
+        $lookup: {
+          from: "brands",
+          localField: "brand",
+          foreignField: "_id",
+          as: "brand",
+        },
+      },
+      {
+        $lookup: {
+          from: "models",
+          localField: "model",
+          foreignField: "_id",
+          as: "model",
+        },
+      },
+      {
+        $addFields: {
+          brand: { $first: "$brand" },
+          model: { $first: "$model" },
+        },
+      },
+    ]);
+    res.status(201).json({
+      status: true,
+      msg: "car update Successfully",
+      result: updatedData,
+    });
+  } catch (error) {
+
+    await Promise.all(
+      req.files["images"].map(async (item) => {
+        try {
+          await fs.unlink(`./public/images/${item.originalname}`);
+        } catch (err) {
+          console.error(`Error removing file ${item.originalname}:`, err);
+        }
+      })
+    );
+    res.status(400).json({ status: false, msg: error.message, result: "" });
   }
 }
 
@@ -412,7 +481,6 @@ async function getAllModels(req, res) {
     let result = null;
 
     if (brand) {
-
       result = await Model.aggregate([
         {
           $match: {
@@ -454,10 +522,6 @@ async function getAllModels(req, res) {
         },
       ]);
     }
-
-
-
-    
 
     res
       .status(200)
@@ -655,7 +719,7 @@ async function deleteModelHandler(req, res) {
     res.status(200).json({
       status: true,
       msg: "Model deleted Successfully",
-      result
+      result,
     });
   } catch (error) {
     res.status(400).json({ status: false, msg: error.message, result: "" });
@@ -736,7 +800,11 @@ async function deleteMsgsHandler(req, res) {
 
     res
       .status(200)
-      .json({ status: true, msg: "Model delete Successfully", result: newData });
+      .json({
+        status: true,
+        msg: "Model delete Successfully",
+        result: newData,
+      });
   } catch (error) {
     res.status(400).json({ status: false, msg: error.message, result: "" });
   }
@@ -747,7 +815,7 @@ async function getSingleCars(req, res) {
     const id = req.params.id;
     // const car = await Car.findById(id);
 
-      const car = await Car.aggregate([
+    const car = await Car.aggregate([
       {
         $match: {
           _id: new mongoose.Types.ObjectId(id),
@@ -861,4 +929,5 @@ export {
   deleteMsgsHandler,
   updateBrandHandler,
   updateModelHandler,
+  updateCarHandler,
 };

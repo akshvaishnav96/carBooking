@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Link, Outlet, redirect, useLocation, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { setLoggedAdmin, setMsgData } from "../slices/carSlice";
 import { fetchHandler } from "../utils/handlers";
@@ -13,31 +13,61 @@ export default function AdminHeaderWrapper() {
 
   let location = useLocation()
 
-  useEffect(() => {
-    const isAuthenticated = async () => {
-      try {
-        let userData = JSON.parse(localStorage.getItem("user"));
-        
-        if (userData && userData.role == "user") {
-          return navigate("/");
-        }
+  const {loggedUser} = useSelector(state =>state.user)
+  const {loggedAdmin} = useSelector(state =>state.cars)
 
-        const msgs = await fetchHandler("/api/v1/admin/cars/msg");
+  
+  
+ useEffect(()=>{
 
-        if (msgs.status === 401 || !userData) {
-          dispatch(setLoggedAdmin(""));
-          dispatch(setLoggedUser(""));
-          localStorage.removeItem("user")
-          return navigate("/login");
-        }
+  
+  let loggedData = JSON.parse(localStorage.getItem("user"));
 
-        dispatch(setMsgData(msgs.result));
-      } catch (error) {
-        toast(error.message);
+  if(loggedData){
+    
+      if(loggedData.role === "user"){
+        navigate("/")
       }
-    };
-    isAuthenticated();
+  }
+
+  if(!loggedData){
+    navigate("/login")
+  }
+
+ },[loggedUser])
+  
+  useEffect(() => {
+    async function logginCheckHandler() {
+      try {
+        const logged = await fetchHandler("/api/v1/logincheck");
+
+        if (logged.status === 401) {
+          dispatch(setLoggedUser(""));
+          dispatch(setLoggedAdmin(""));
+          localStorage.removeItem("user");
+          return;
+        }
+
+        if (logged.status === 200) {
+          if (logged.data.result.role === "user") {
+            dispatch(setLoggedUser(logged.data.result));
+          }
+
+          if (logged.data.result.role === "admin") {
+            dispatch(setLoggedAdmin(logged.data.result));
+          }
+
+          localStorage.setItem("user", JSON.stringify(logged.data.result));
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    }
+
+    logginCheckHandler();
   }, []);
+
+
 
   const navItems = [
     { id: 1, text: "brand", nav: "/admin/brand" ,active:location.pathname==="/admin/brand" },

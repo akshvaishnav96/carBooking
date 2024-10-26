@@ -15,29 +15,61 @@ export default function Booking() {
     const { loggedUser, userBookings } = useSelector((state) => state.user)
     const { loggedAdmin } = useSelector((state) => state.cars)
 
-useEffect(()=>{
-  let userData = JSON.parse(localStorage.getItem("user"));
-        if (userData && userData.role == "admin") {
-          return navigate("/admin");
-        }
-        if(!userData){
-          return navigate("/login");
-        }
-},[])
+
+    useEffect(()=>{
+
+  
+      let loggedData = JSON.parse(localStorage.getItem("user"));
+    
+      if(loggedData){
+        
+          if(loggedData.role === "admin"){
+            navigate("/admin")
+          }
+      }
+    
+      if(!loggedData){
+        navigate("/login")
+      }
+    
+     },[loggedUser])
+
 
     useEffect(() => {
-      
+        async function logginCheckHandler() {
+          try {
+            const logged = await fetchHandler("/api/v1/logincheck");
+    
+            if (logged.status === 401) {
+              dispatch(setLoggedUser(""));
+              dispatch(setLoggedAdmin(""));
+              localStorage.removeItem("user");
+              return;
+            }
+    
+            if (logged.status === 200) {
+              if (logged.data.result.role === "user") {
+                dispatch(setLoggedUser(logged.data.result));
+              }
+    
+              if (logged.data.result.role === "admin") {
+                dispatch(setLoggedAdmin(logged.data.result));
+              }
+    
+              localStorage.setItem("user", JSON.stringify(logged.data.result));
+            }
+          } catch (error) {
+            console.log(error.message);
+          }
+        }
+    
+        logginCheckHandler();
+      }, []);
+
+    useEffect(() => {
         async function getBookings() {
             const response = await fetchHandler(`/api/v1/user/booking`);
-            if(response.status === 401){
-                localStorage.removeItem("user");
-                dispatch(setLoggedAdmin(""));
-                dispatch(setLoggedUser(""));
-                navigate("/")
-            }
-            dispatch(setUserBookings(response.data.result))
-           
-           
+            dispatch(setUserBookings(response.data.result))           
         }
         getBookings();
     }, [loggedUser,loggedAdmin]);

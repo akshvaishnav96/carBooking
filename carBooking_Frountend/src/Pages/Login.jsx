@@ -49,16 +49,16 @@ function Login() {
       setIsLoading(false)
 
 
-      if (response.status === 302) {
-        localStorage.setItem("user", JSON.stringify(response?.response.data.result))
-        if (response?.response.data.result.role === "user") {
-          dispatch(setLoggedUser(response?.response.data.result))
-          return navigate("/")
-        } else {
-          dispatch(setLoggedAdmin(response?.response.data.result))
-          return navigate("/admin")
-        }
-      }
+      // if (response.status === 302) {
+      //   localStorage.setItem("user", JSON.stringify(response?.response.data.result))
+      //   if (response?.response.data.result.role === "user") {
+      //     dispatch(setLoggedUser(response?.response.data.result))
+      //     return navigate("/")
+      //   } else {
+      //     dispatch(setLoggedAdmin(response?.response.data.result))
+      //     return navigate("/admin")
+      //   }
+      // }
 
       if (response.status<400) {
         if (response.data.result?.role === "user") {
@@ -92,24 +92,58 @@ function Login() {
   }
 
   useEffect(()=>{
-    const localData =localStorage.getItem("user");
-    if(localData){
-      let data = JSON.parse(localData)
-      if( data && data.role == "admin"){
-        return navigate("/admin")
-      }
-      if( data && data.role == "user"){
-        return navigate("/")
-      }
+
+  
+    let loggedData = JSON.parse(localStorage.getItem("user"));
+  
+    if(loggedData){
       
+        if(loggedData.role === "admin"){
+          navigate("/admin")
+        }
+
+        if(loggedData.role === "user"){
+          navigate("/")
+        }
     }
-    
-    
-  },[])
+  
+    if(!loggedData){
+      navigate("/login")
+    }
+  
+   },[loggedUser,loggedAdmin])
 
-console.log(error);
 
-
+  useEffect(() => {
+      async function logginCheckHandler() {
+        try {
+          const logged = await fetchHandler("/api/v1/logincheck");
+  
+          if (logged.status === 401) {
+            dispatch(setLoggedUser(""));
+            dispatch(setLoggedAdmin(""));
+            localStorage.removeItem("user");
+            return;
+          }
+  
+          if (logged.status === 200) {
+            if (logged.data.result.role === "user") {
+              dispatch(setLoggedUser(logged.data.result));
+            }
+  
+            if (logged.data.result.role === "admin") {
+              dispatch(setLoggedAdmin(logged.data.result));
+            }
+  
+            localStorage.setItem("user", JSON.stringify(logged.data.result));
+          }
+        } catch (error) {
+          console.log(error.message);
+        }
+      }
+  
+      logginCheckHandler();
+    }, []);
   return (
 
     <form

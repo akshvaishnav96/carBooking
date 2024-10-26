@@ -2,52 +2,30 @@ import React, { useEffect, useState } from "react";
 import {  useLoaderData } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import HashLoader from "react-spinners/HashLoader";
-import { setBrand, setCars, setModel, setMsgData } from "../slices/carSlice";
+import { clearInputs, setBrand, setCars, setModel, setMsgData } from "../slices/carSlice";
 import Card from "../components/Card";
 
 export default function Admin() {
   const dispatch = useDispatch();
-  const data = useLoaderData();
+  const cars = useLoaderData();
   
   
   const { carsData } = useSelector((state) => state.cars);
-  const [loading, setLoading] = useState(true);
 
  
 
 
   useEffect(() => {
-    if (data) {
-      setLoading(false);
+    dispatch(clearInputs())
+
+
+    if(cars.status <400){
+      dispatch(setCars(cars.data.result));
     }
-
-  
-
-
+    
   }, []);
 
-  useEffect(() => {
-    
-    dispatch(setCars(data.cars.data.result));
-    dispatch(setModel(data.model.data.result));
-    dispatch(setBrand(data.brand.data.result));
-    dispatch(setMsgData(data.msgs.data.result));
-  }, [dispatch]);
-
-  if (loading) {
-    return (
-      <div className="h-[100vh] flex justify-center items-center">
-        {" "}
-        <HashLoader
-          color="green"
-          loading={loading}
-          size={150}
-          aria-label="Loading Spinner"
-          data-testid="loader"
-        />
-      </div>
-    );
-  }
+ 
 
   return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
