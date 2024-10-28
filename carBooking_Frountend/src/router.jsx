@@ -15,6 +15,8 @@ import UplodeModel from "./Pages/UplodeModel";
 import UplodeCar from "./Pages/UplodeCar";
 import Booking from "./Pages/Booking";
 import EditCar from "./Pages/EditCar";
+import Users from "./Pages/Users";
+import UsersSinglePage from "./Pages/UsersSinglePage";
 
 
 
@@ -104,6 +106,16 @@ const router = createBrowserRouter([
               return {carData,brandData}
             }
             
+          },
+          {
+            path:"users",
+            element:<Users />,
+            loader:async ()=> await fetchHandler("/api/v1/admin/users"),
+          },
+          {
+            path:"users/:id",
+            element:<UsersSinglePage />,
+            loader:async (elem)=> await fetchHandler(`/api/v1/admin/users/${elem.params.id}`),
           }
 
 

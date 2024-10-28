@@ -75,12 +75,13 @@ export default function AdminHeaderWrapper() {
     { id: 3, text: "add car", nav: "/admin/addcar" ,active:location.pathname==="/admin/addcar" },
     { id: 4, text: "cars", nav: "/admin" ,active:location.pathname==="/admin" },
     { id: 5, text: "msgs", nav: "/admin/msgs" ,active:location.pathname==="/admin/msgs" },
+    { id: 6, text: "users", nav: "/admin/users" ,active:location.pathname==="/admin/users" },
   ];
   return (
     <>
       <nav className="bg-gray-200 p-7  flex justify-end">
         {navItems.map((item) => (
-          <Link to={item.nav} key={item._id} className="transition duration-300 ease-in-out hover:scale-110">
+          <Link to={item.nav} key={item.id} className="transition duration-300 ease-in-out hover:scale-110">
             <span className={`${item.active?"bg-green-500 text-white " : "text-black bg-gray-300"} shadow-md uppercase  p-2  px-6 py-4 m-3  rounded-xl cursor-pointer duration-300 hover:text-white  hover:bg-green-500 `}>
               {item.text}
             </span>

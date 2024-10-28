@@ -6,6 +6,8 @@ import { toast } from "react-toastify";
 import { FaEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import HashLoader from 'react-spinners/HashLoader';
+import swal from 'sweetalert';
+
 
 
 export default function ButtonWithDelete({ item, deletePath,setIsEdit ,setEditId}) {
@@ -13,26 +15,48 @@ export default function ButtonWithDelete({ item, deletePath,setIsEdit ,setEditId
   const [isLoading,setIsLoading] = useState(false)
   const {brand,model} = useSelector(state=>state.cars)
   async function deleteHandler(id) {
-    try {
-      setIsLoading(true)
-      const response = await fetchHandler(
-        `/api/v1/admin/cars/${deletePath}/${id}`,
-        "delete"
-      );
-      setIsLoading(false)
+  
+  
+    swal("Are you sure you want to do this?", {
+      title: "Are you sure?",
+      text: "Once deleted, you will not be able to recover this ",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+  })
+    .then(async(willDelete) => {
+      if (willDelete) {
+
+        try {
 
 
-      if (deletePath === "brand") {
-        dispatch(setBrand(response.data.result));
+          setIsLoading(true)
+          const response = await fetchHandler(
+            `/api/v1/admin/cars/${deletePath}/${id}`,
+            "delete"
+          );
+          setIsLoading(false)
+    
+    
+          if (deletePath === "brand") {
+            dispatch(setBrand(response.data.result));
+          }
+    
+          if (deletePath === "model") {
+            dispatch(setModel(response.data.result));
+          }
+          swal("Deleted!", "SuccessFully ", "success");
+          // toast.success("successfully deleted");
+        } catch (error) {
+          toast.error("Something went wrong while Deleting");
+        }
+
       }
-
-      if (deletePath === "model") {
-        dispatch(setModel(response.data.result));
-      }
-      toast.success("successfully deleted");
-    } catch (error) {
-      toast.error("Something went wrong while Deleting");
-    }
+    });
+  
+  
+  
+    
   }
 
   async function editHandler(id){

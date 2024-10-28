@@ -24,6 +24,7 @@ const initialState = {
   addressVal: "",
   mobileVal: "",
   emailVal: "",
+
 };
 
 const carsSlice = createSlice({
