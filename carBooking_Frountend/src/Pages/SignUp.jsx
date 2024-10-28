@@ -22,6 +22,7 @@ function Signup() {
 
   useEffect(()=>{
 
+    dispatch(clearInputs())
   
     let loggedData = JSON.parse(localStorage.getItem("user"));
   
@@ -107,6 +108,21 @@ function Signup() {
         setError((prev) => {
           return { ...prev, mobile: "mobile is must be 10 digit" }
         })
+        return
+      }
+    }
+
+    if (username) {
+      const validatename = /^[a-zA-Z0-9_]+$/;
+      const result = validatename.test(username);
+      if (!result) {
+        setError((prev) => {
+          return {
+            ...prev,
+            username: "Enter valid username only alphabet, number's and _ allowed ",
+          };
+        });
+        return;
       }
     }
 

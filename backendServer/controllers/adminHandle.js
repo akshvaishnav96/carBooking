@@ -685,6 +685,56 @@ async function fetchSingleUser(req, res) {
   }
 }
 
+async function updateUser(req, res) {
+  try {
+    const id = req.params.id;
+    const { username, email, mobile, role } = req.body;
+    const existUser = await User.findById(id);
+
+    if (!existUser)
+      res
+        .status(400)
+        .json({ msg: "user not found", status: false, result: "" });
+
+    const alreadyExistWithDetails = await User.findOne( {$and : [{ _id: { $ne: id } },{$or:[{mobile},{email}]}]});
+
+    if (alreadyExistWithDetails) {
+      if (alreadyExistWithDetails.email === email) {
+        return res.status(400).json({ status: false, result: "", msg: "Email is already used" });
+      } else if (alreadyExistWithDetails.mobile === mobile) {
+        return res.status(400).json({ status: false, result: "", msg: "Mobile number is already used" });
+      }
+    }
+
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { $set: { username, email, mobile, role: role } },
+      { new: true }
+    ).select("-password -refreshToken -booking ");
+
+    if (!updatedUser) {
+      res
+        .status(400)
+        .json({
+          msg: "something went wrong while updating",
+          status: false,
+          result: "",
+        });
+    }
+
+    res
+      .status(200)
+      .json({
+        msg: "user updated successfully",
+        status: true,
+        result: updatedUser,
+      });
+  } catch (error) {
+    res.status(400).json({ msg: error.message, status: false, result: "" });
+  }
+}
+
 async function deleteModelHandler(req, res) {
   try {
     const id = req.params.id;
@@ -745,8 +795,8 @@ async function deleteMsgsHandler(req, res) {
 
     const msgData = await Msg.findById(id);
     const carId = msgData.carDetails;
-    
-    await Car.findByIdAndUpdate(carId, { $set:{booked: false }});
+
+    await Car.findByIdAndUpdate(carId, { $set: { booked: false } });
     await Msg.findByIdAndDelete(id);
 
     if (!msgData) throw new Error("nothing to delete something went wrong");
@@ -927,4 +977,5 @@ export {
   updateBrandHandler,
   updateModelHandler,
   updateCarHandler,
+  updateUser,
 };

@@ -12,9 +12,6 @@ export default function Admin() {
   
   const { carsData } = useSelector((state) => state.cars);
 
- 
-
-
   useEffect(() => {
     dispatch(clearInputs())
 

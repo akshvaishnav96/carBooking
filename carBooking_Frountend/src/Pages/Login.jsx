@@ -93,7 +93,7 @@ function Login() {
 
   useEffect(()=>{
 
-  
+  dispatch(clearInputs())
     let loggedData = JSON.parse(localStorage.getItem("user"));
   
     if(loggedData){
